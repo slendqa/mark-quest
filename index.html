@@ -28,36 +28,31 @@
 <body class="p-4 md:p-8">
 
     <div id="app" class="max-w-2xl mx-auto">
-        <!-- Loading Overlay -->
+        <!-- Заставка завантаження -->
         <div id="loading" class="fixed inset-0 bg-white/90 backdrop-blur-sm z-[300] flex items-center justify-center font-bold text-slate-600 text-center px-4">
-            <div><div class="text-4xl mb-4 animate-bounce">🚀</div>Завантаження...</div>
+            <div><div class="text-4xl mb-4 animate-bounce">🚀</div>Встановлюємо зв'язок з базою...</div>
         </div>
 
-        <!-- Header -->
+        <!-- Шапка -->
         <header class="bg-white p-6 rounded-3xl shadow-lg border-b-4 border-blue-100 mb-6">
-            <div class="flex justify-between items-start mb-4">
-                <div>
-                    <h1 id="ui-greeting" class="text-2xl font-extrabold text-slate-800 tracking-tight text-center sm:text-left">Марк, вперед! 🚀</h1>
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-4">
+                <div class="text-center sm:text-left">
+                    <h1 id="ui-greeting" class="text-2xl font-extrabold text-slate-800 tracking-tight">Марк, вперед! 🚀</h1>
                     <div class="flex items-center gap-2 mt-1 justify-center sm:justify-start">
-                        <span id="user-rank" class="bg-blue-100 text-blue-700 text-[10px] font-black px-2 py-0.5 rounded-full uppercase">...</span>
+                        <span id="user-rank" class="bg-blue-100 text-blue-700 text-[10px] font-black px-2 py-0.5 rounded-full uppercase italic">...</span>
                         <span class="text-slate-400 font-bold text-[10px] uppercase tracking-widest">Рівень <span id="user-level">1</span></span>
                     </div>
                 </div>
-                <div class="flex flex-col items-end gap-2">
-                    <button onclick="window.toggleLang()" class="bg-slate-100 px-3 py-1 rounded-full text-[10px] font-black text-slate-500 border border-slate-200 uppercase">UA / EN</button>
-                    <div id="balance-container" class="bg-yellow-100 px-5 py-2 rounded-2xl flex items-center gap-2 border-b-4 border-yellow-200">
-                        <span class="text-2xl">⭐</span>
-                        <span id="balance" class="text-2xl font-black text-yellow-700">0</span>
-                    </div>
+                <div class="flex flex-col items-center sm:items-end gap-2">
+                    <button onclick="window.toggleLang()" class="bg-slate-100 px-3 py-1 rounded-full text-[10px] font-black text-slate-500 border border-slate-200">UA / EN</button>
+                    <div id="balance-container" class="bg-yellow-100 px-5 py-2 rounded-2xl flex items-center gap-2 border-b-4 border-yellow-200 text-2xl font-black text-yellow-700">⭐ <span id="balance">0</span></div>
                 </div>
             </div>
-            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                <div id="level-progress" class="progress-bar bg-blue-500 h-full" style="width: 0%"></div>
-            </div>
+            <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden"><div id="level-progress" class="progress-bar bg-blue-500 h-full" style="width: 0%"></div></div>
         </header>
 
-        <!-- Navigation -->
-        <div class="flex gap-2 mb-6 overflow-x-auto pb-2 no-scrollbar">
+        <!-- Навігація -->
+        <div class="flex gap-2 mb-6 overflow-x-auto pb-2 no-scrollbar text-xs font-black uppercase tracking-tighter">
             <button onclick="window.switchTab('tasks')" id="tab-tasks" class="flex-1 min-w-[90px] py-3 rounded-2xl font-bold transition-all bg-blue-600 text-white shadow-md">🎯 Квести</button>
             <button onclick="window.switchTab('shop')" id="tab-shop" class="flex-1 min-w-[90px] py-3 rounded-2xl font-bold transition-all bg-white text-slate-600 border border-slate-200">🎁 Крамниця</button>
             <button onclick="window.switchTab('goals')" id="tab-goals" class="flex-1 min-w-[90px] py-3 rounded-2xl font-bold transition-all bg-white text-slate-600 border border-slate-200">💎 Мрії</button>
@@ -66,75 +61,56 @@
 
         <div id="section-tasks" class="space-y-4"><div id="tasks-list" class="space-y-3"></div></div>
         <div id="section-shop" class="hidden space-y-4"><div id="shop-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div></div>
-        <div id="section-goals" class="hidden space-y-4">
-            <div class="bg-blue-50 p-6 rounded-3xl border-2 border-blue-100 text-center mb-4 text-blue-800"><h3 class="font-black text-sm uppercase tracking-widest mb-1">Твої великі цілі</h3></div>
-            <div id="goals-list" class="space-y-4"></div>
-        </div>
+        <div id="section-goals" class="hidden space-y-4"><div id="goals-list" class="space-y-4"></div></div>
         <div id="section-calendar" class="hidden space-y-4">
             <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
-                <div class="flex justify-between items-center mb-4"><h3 id="calendar-month-year" class="font-bold uppercase text-sm tracking-widest text-slate-800"></h3><div class="flex gap-2"><button onclick="window.changeMonth(-1)" class="p-2 bg-slate-100 rounded-lg">◀</button><button onclick="window.changeMonth(1)" class="p-2 bg-slate-100 rounded-lg">▶</button></div></div>
+                <div class="flex justify-between items-center mb-4"><h3 id="calendar-month-year" class="font-bold uppercase text-sm tracking-widest text-slate-800"></h3><div class="flex gap-2"><button onclick="window.changeMonth(-1)" class="p-2 bg-slate-100 rounded-lg text-slate-600">◀</button><button onclick="window.changeMonth(1)" class="p-2 bg-slate-100 rounded-lg text-slate-600">▶</button></div></div>
                 <div class="calendar-grid mb-4" id="calendar-body"></div>
             </div>
             <div id="day-details" class="p-6 bg-white rounded-3xl border border-slate-100 shadow-sm hidden">
-                <div class="flex justify-between items-center mb-4 pb-4 border-b border-slate-50"><h4 id="details-date" class="font-black text-slate-700 text-xs uppercase tracking-tighter text-slate-800"></h4><div class="bg-blue-600 text-white px-3 py-1 rounded-full text-[9px] font-black">Залишок: <span id="day-end-balance">0</span> ⭐</div></div>
+                <div class="flex justify-between items-center mb-4 pb-4 border-b border-slate-50"><h4 id="details-date" class="font-black text-slate-700 text-xs uppercase tracking-tighter"></h4><div class="bg-blue-600 text-white px-3 py-1 rounded-full text-[9px] font-black">Залишок: <span id="day-end-balance">0</span> ⭐</div></div>
                 <div id="details-logs" class="space-y-2"></div>
             </div>
         </div>
 
-        <footer class="mt-12 py-8 border-t border-slate-200 text-center">
-            <button onclick="window.openPinPad()" class="text-slate-400 text-[10px] font-black uppercase tracking-widest hover:text-slate-600">⚙️ Батьківський контроль</button>
-        </footer>
+        <footer class="mt-12 py-8 border-t border-slate-200 text-center"><button onclick="window.openPinPad()" class="text-slate-400 text-[10px] font-black uppercase tracking-widest hover:text-slate-600 transition-colors">⚙️ Батьківський контроль</button></footer>
     </div>
 
-    <!-- Modals -->
-    <div id="pin-modal" class="fixed inset-0 bg-slate-900/95 backdrop-blur-md hidden flex items-center justify-center p-4 z-[400]">
-        <div class="w-full max-w-xs text-center"><h2 class="text-white text-xl font-bold mb-6">Введіть PIN</h2><div id="pin-dots" class="flex justify-center gap-4 mb-8"><div class="w-4 h-4 rounded-full bg-slate-700 transition-all"></div><div class="w-4 h-4 rounded-full bg-slate-700 transition-all"></div><div class="w-4 h-4 rounded-full bg-slate-700 transition-all"></div><div class="w-4 h-4 rounded-full bg-slate-700 transition-all"></div></div><div id="pin-grid" class="grid grid-cols-3 gap-3"></div></div>
-    </div>
+    <!-- Модалки -->
+    <div id="pin-modal" class="fixed inset-0 bg-slate-900/95 backdrop-blur-md hidden flex items-center justify-center p-4 z-[400] text-center"><div class="w-full max-w-xs"><h2 class="text-white text-xl font-bold mb-6">Введіть PIN</h2><div id="pin-dots" class="flex justify-center gap-4 mb-8 text-center"><div class="w-4 h-4 rounded-full bg-slate-700 transition-all"></div><div class="w-4 h-4 rounded-full bg-slate-700 transition-all"></div><div class="w-4 h-4 rounded-full bg-slate-700 transition-all"></div><div class="w-4 h-4 rounded-full bg-slate-700 transition-all"></div></div><div id="pin-grid" class="grid grid-cols-3 gap-3"></div></div></div>
 
-    <div id="admin-modal" class="fixed inset-0 bg-slate-50 hidden z-[500] overflow-y-auto">
-        <div class="p-6 max-w-2xl mx-auto"><div class="flex justify-between items-center mb-8"><h2 class="text-2xl font-black text-slate-800 tracking-tighter">Налаштування 🔐</h2><button onclick="window.closeAdminModal()" class="bg-blue-600 text-white px-6 py-2 rounded-2xl font-bold shadow-lg">Вийти</button></div>
-            <div class="flex gap-2 mb-6 bg-slate-200 p-1 rounded-2xl overflow-x-auto no-scrollbar"><button onclick="window.switchAdminTab('general')" id="admin-tab-general" class="admin-tab-btn active flex-1 py-2 rounded-xl text-[10px] font-black uppercase px-4">Головне</button><button onclick="window.switchAdminTab('tasks')" id="admin-tab-tasks" class="admin-tab-btn flex-1 py-2 rounded-xl text-[10px] font-black uppercase px-4">Квести</button><button onclick="window.switchAdminTab('shop')" id="admin-tab-shop" class="admin-tab-btn flex-1 py-2 rounded-xl text-[10px] font-black uppercase px-4">Крамниця</button><button onclick="window.switchAdminTab('goals')" id="admin-tab-goals" class="admin-tab-btn flex-1 py-2 rounded-xl text-[10px] font-black uppercase px-4">Мрії</button><button onclick="window.switchAdminTab('ranks')" id="admin-tab-ranks" class="admin-tab-btn flex-1 py-2 rounded-xl text-[10px] font-black uppercase px-4">Рівні</button></div>
-            <div id="admin-content-general" class="space-y-4 text-center">
-                <button id="btn-reset-tasks" onclick="window.confirmAction('resetTasks')" class="w-full py-4 bg-white border border-slate-200 rounded-3xl font-bold text-slate-700">Скинути квести на сьогодні</button>
-                <button onclick="window.addBonus(50)" class="w-full py-4 bg-yellow-100 rounded-3xl font-bold text-yellow-700">Бонус +50 ⭐</button>
-                <button onclick="window.runSmokeTests()" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest">🚀 Запустити смоук-тести</button>
-            </div>
-            <div id="admin-content-tasks" class="hidden space-y-4"><div class="bg-blue-600 p-5 rounded-3xl text-white shadow-xl"><input type="text" id="task-title-ua" placeholder="Назва (UA)" class="w-full p-3 rounded-xl mb-2 text-slate-800 font-bold"><input type="number" id="task-points" placeholder="Бали" class="w-full p-3 rounded-xl text-slate-800 font-bold mb-2"><input type="text" id="task-icon" placeholder="Emoji" class="w-full p-3 rounded-xl text-slate-800 font-bold text-center mb-4"><button onclick="window.addItem('tasks')" class="w-full bg-white text-blue-600 py-3 rounded-xl font-black uppercase text-xs">Додати</button></div><div id="admin-list-tasks" class="space-y-2"></div></div>
-            <div id="admin-content-shop" class="hidden space-y-4"><div class="bg-orange-500 p-5 rounded-3xl text-white shadow-xl"><input type="text" id="shop-title-ua" placeholder="Назва (UA)" class="w-full p-3 rounded-xl mb-2 text-slate-800 font-bold"><input type="number" id="shop-cost" placeholder="Вартість ⭐" class="w-full p-3 rounded-xl text-slate-800 font-bold mb-2"><input type="text" id="shop-icon" placeholder="Emoji" class="w-full p-3 rounded-xl text-slate-800 font-bold text-center mb-4"><button onclick="window.addItem('shop')" class="w-full bg-white text-orange-600 py-3 rounded-xl font-black uppercase text-xs">Додати</button></div><div id="admin-list-shop" class="space-y-2"></div></div>
-            <div id="admin-content-goals" class="hidden space-y-4"><div class="bg-purple-600 p-5 rounded-3xl text-white shadow-xl"><input type="text" id="goal-title-ua" placeholder="Назва (UA)" class="w-full p-3 rounded-xl mb-2 text-slate-800 font-bold"><input type="number" id="goal-cost" placeholder="Ціль ⭐" class="w-full p-3 rounded-xl text-slate-800 font-bold mb-2"><input type="text" id="goal-icon" placeholder="Emoji" class="w-full p-3 rounded-xl text-slate-800 font-bold text-center mb-4"><button onclick="window.addItem('goals')" class="w-full bg-white text-purple-600 py-3 rounded-xl font-black uppercase text-xs">Додати</button></div><div id="admin-list-goals" class="space-y-2"></div></div>
-            <div id="admin-content-ranks" class="hidden space-y-4"><div class="bg-slate-800 p-5 rounded-3xl text-white shadow-xl"><div id="admin-ranks-inputs" class="space-y-4 mb-4"></div><button onclick="window.saveRanks()" class="w-full bg-blue-500 text-white py-4 rounded-2xl font-black uppercase text-xs">Зберегти рівні</button></div></div>
-        </div>
-    </div>
+    <div id="admin-modal" class="fixed inset-0 bg-slate-50 hidden z-[500] overflow-y-auto"><div class="p-6 max-w-2xl mx-auto"><div class="flex justify-between items-center mb-8"><h2 class="text-2xl font-black text-slate-800 uppercase tracking-tighter">Налаштування 🔐</h2><button onclick="window.closeAdminModal()" class="bg-blue-600 text-white px-6 py-2 rounded-2xl font-bold shadow-lg">Вийти</button></div><div class="flex gap-2 mb-6 bg-slate-200 p-1 rounded-2xl overflow-x-auto no-scrollbar"><button onclick="window.switchAdminTab('general')" id="admin-tab-general" class="admin-tab-btn active flex-1 py-2 rounded-xl text-[10px] font-black uppercase px-4">Головне</button><button onclick="window.switchAdminTab('tasks')" id="admin-tab-tasks" class="admin-tab-btn flex-1 py-2 rounded-xl text-[10px] font-black uppercase px-4">Квести</button><button onclick="window.switchAdminTab('shop')" id="admin-tab-shop" class="admin-tab-btn flex-1 py-2 rounded-xl text-[10px] font-black uppercase px-4">Крамниця</button><button onclick="window.switchAdminTab('goals')" id="admin-tab-goals" class="admin-tab-btn flex-1 py-2 rounded-xl text-[10px] font-black uppercase px-4">Мрії</button><button onclick="window.switchAdminTab('ranks')" id="admin-tab-ranks" class="admin-tab-btn flex-1 py-2 rounded-xl text-[10px] font-black uppercase px-4">Рівні</button></div><div id="admin-content-general" class="space-y-4 text-center"><button onclick="window.confirmAction('resetTasks')" id="btn-reset-tasks" class="w-full py-4 bg-white border border-slate-200 rounded-3xl font-bold text-slate-700">Скинути квести на сьогодні</button><button onclick="window.addBonus(50)" class="w-full py-4 bg-yellow-100 rounded-3xl font-bold text-yellow-700">Бонус +50 ⭐</button><button onclick="window.runSmokeTests()" class="w-full py-4 bg-indigo-600 text-white rounded-2xl font-black uppercase text-[10px]">🚀 Smoke Test</button></div><div id="admin-content-tasks" class="hidden space-y-4"><div class="bg-blue-600 p-5 rounded-3xl text-white shadow-xl text-center"><input type="text" id="task-title-ua" placeholder="Назва (UA)" class="w-full p-3 rounded-xl mb-2 text-slate-800 font-bold"><input type="number" id="task-points" placeholder="Бали" class="w-full p-3 rounded-xl text-slate-800 font-bold mb-2"><input type="text" id="task-icon" placeholder="Emoji" class="w-full p-3 rounded-xl text-slate-800 font-bold text-center mb-4"><button onclick="window.addItem('tasks')" class="w-full bg-white text-blue-600 py-3 rounded-xl font-black uppercase text-xs">Додати</button></div><div id="admin-list-tasks" class="space-y-2"></div></div><div id="admin-content-shop" class="hidden space-y-4"><div class="bg-orange-500 p-5 rounded-3xl text-white shadow-xl text-center"><input type="text" id="shop-title-ua" placeholder="Назва (UA)" class="w-full p-3 rounded-xl mb-2 text-slate-800 font-bold"><input type="number" id="shop-cost" placeholder="Вартість ⭐" class="w-full p-3 rounded-xl text-slate-800 font-bold mb-2"><input type="text" id="shop-icon" placeholder="Emoji" class="w-full p-3 rounded-xl text-slate-800 font-bold text-center mb-4"><button onclick="window.addItem('shop')" class="w-full bg-white text-orange-600 py-3 rounded-xl font-black uppercase text-xs">Додати</button></div><div id="admin-list-shop" class="space-y-2"></div></div><div id="admin-content-goals" class="hidden space-y-4"><div class="bg-purple-600 p-5 rounded-3xl text-white shadow-xl text-center"><input type="text" id="goal-title-ua" placeholder="Назва (UA)" class="w-full p-3 rounded-xl mb-2 text-slate-800 font-bold"><input type="number" id="goal-cost" placeholder="Ціль ⭐" class="w-full p-3 rounded-xl text-slate-800 font-bold mb-2"><input type="text" id="goal-icon" placeholder="Emoji" class="w-full p-3 rounded-xl text-slate-800 font-bold text-center mb-4"><button onclick="window.addItem('goals')" class="w-full bg-white text-purple-600 py-3 rounded-xl font-black uppercase text-xs">Додати</button></div><div id="admin-list-goals" class="space-y-2"></div></div><div id="admin-content-ranks" class="hidden space-y-4"><div class="bg-slate-800 p-5 rounded-3xl text-white shadow-xl"><div id="admin-ranks-inputs" class="space-y-4 mb-4"></div><button onclick="window.saveRanks()" class="w-full bg-blue-500 text-white py-4 rounded-2xl font-black uppercase text-xs">Зберегти рівні</button></div></div></div></div>
 
+    <!-- Smoke Test UI -->
     <div id="test-overlay" class="fixed inset-0 bg-slate-900/90 z-[1000] hidden items-center justify-center p-4">
-        <div id="test-report" class="bg-white w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl flex flex-col max-h-[85vh]"><div class="flex justify-between items-center mb-6 border-b pb-4"><h3 class="text-xl font-black text-slate-800 uppercase tracking-tighter text-sm">Smoke Test Report 📋</h3><button onclick="document.getElementById('test-overlay').classList.add('hidden')" class="text-slate-400 font-bold p-2">✕</button></div><div id="test-steps" class="space-y-3 mb-6 overflow-y-auto flex-1 pr-2 custom-scroll"></div><button onclick="document.getElementById('test-overlay').classList.add('hidden')" class="w-full py-4 bg-slate-800 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest shrink-0">Закрити звіт</button></div>
+        <div id="test-report" class="bg-white w-full max-w-md rounded-[2.5rem] p-8 shadow-2xl flex flex-col max-h-[85vh]">
+            <div class="flex justify-between items-center mb-6 border-b pb-4 shrink-0"><h3 class="text-xl font-black text-slate-800 uppercase tracking-tighter text-sm">Smoke Test Status 📋</h3><button onclick="document.getElementById('test-overlay').classList.add('hidden')" class="text-slate-400 font-bold p-2">✕</button></div>
+            <div id="test-steps" class="space-y-3 mb-6 overflow-y-auto flex-1 pr-2 custom-scroll"></div>
+            <button onclick="document.getElementById('test-overlay').classList.add('hidden')" class="w-full py-4 bg-slate-800 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest shrink-0">Закрити</button>
+        </div>
     </div>
 
     <div id="toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-8 py-4 rounded-full font-bold shadow-2xl opacity-0 transition-all pointer-events-none z-[600] text-sm text-center"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, collection, onSnapshot, updateDoc, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // --- КРОК 1: ТУТ ВСТАВ СВІЙ FIREBASE CONFIG З ПАНЕЛІ FIREBASE ---
-        // Якщо ти на GitHub Pages, скопіюй сюди об'єкт { apiKey: "...", ... }
-        const manualFirebaseConfig = null; 
+        // --- FIREBASE CONFIG ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyDXefvcIw-hwiDIJy16870aqUYII0KN6q0",
+            authDomain: "markquestss.firebaseapp.com",
+            projectId: "markquestss",
+            storageBucket: "markquestss.firebasestorage.app",
+            messagingSenderId: "304585921289",
+            appId: "1:304585921289:web:e9d633d19b39699b66f9d8"
+        };
 
-        // Логіка підключення: пріоритет твоїм ручним даним
-        const configStr = manualFirebaseConfig ? JSON.stringify(manualFirebaseConfig) : (typeof __firebase_config !== 'undefined' ? __firebase_config : null);
-        
-        if (!configStr) {
-            document.body.innerHTML = "<div class='p-10 text-center font-bold text-slate-700'><div class='text-4xl mb-4'>⚠️</div><p>Помилка: Налаштування бази даних не знайдено.</p><p class='text-sm mt-4 font-normal'>Будь ласка, вставте свій <b>firebaseConfig</b> у файл index.html для роботи на GitHub Pages.</p></div>";
-        }
-        
-        const firebaseConfig = JSON.parse(configStr);
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        
-        // --- КРОК 2: ПРИДУМАЙ УНІКАЛЬНИЙ ID ДЛЯ СВОЄЇ АПКИ ---
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'mark-quest-prod-1';
+        const appId = 'mark-quest-prod-ss-final';
 
         let state = { balance: 0, totalEarned: 0, completedTasks: [], lang: 'uk', pin: '0000' };
         let config = { tasks: [], shop: [], goals: [], ranks: [] };
@@ -149,12 +125,7 @@
 
         const init = async () => {
             selectedDateStr = toYMD(new Date());
-            try { 
-                const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-                if (token) await signInWithCustomToken(auth, token); 
-                else await signInAnonymously(auth); 
-            } catch (e) { console.error("Auth error:", e); }
-            
+            try { await signInAnonymously(auth); } catch (e) { console.error("Auth error:", e); }
             onAuthStateChanged(auth, (u) => { user = u; if (u) setupListeners(); });
             renderPinButtons();
         };
@@ -165,10 +136,10 @@
                 if (snap.exists()) config = snap.data(); 
                 else { 
                     const def = { 
-                        tasks: [{id: 1, title: {uk: "Чищення зубів 🦷", en: "Teeth 🦷"}, points: 10, icon: "✨"}],
+                        tasks: [{id: 1, title: {uk: "Чищення зубів 🦷", en: "Teeth 🦷"}, points: 10, icon: "✨"}, {id: 2, title: {uk: "Допомога з посудом 🍽️", en: "Dishwasher Duty 🍽️"}, points: 20, icon: "🧼"}],
                         shop: [{id: 101, title: {uk: "iPad 30 хв", en: "iPad 30m"}, cost: 50, icon: "🎮"}],
-                        goals: [{id: 501, title: {uk: "LEGO", en: "LEGO"}, cost: 2000, icon: "🧱"}],
-                        ranks: [{threshold:0, title:{uk:"Новачок", en:"Novice"}}, {threshold:500, title:{uk:"Учень", en:"Apprentice"}}, {threshold:1500, title:{uk:"Шукач Пригод", en:"Adventurer"}}, {threshold:4000, title:{uk:"Герой Квестів", en:"Hero"}}]
+                        goals: [{id: 501, title: {uk: "Велике LEGO", en: "LEGO"}, cost: 2000, icon: "🧱"}],
+                        ranks: [{threshold:0, title:{uk:"Новачок", en:"Novice"}}, {threshold:500, title:{uk:"Учень", en:"Apprentice"}}, {threshold:1500, title:{uk:"Шукач", en:"Seeker"}}, {threshold:4000, title:{uk:"Герой", en:"Hero"}}]
                     }; 
                     setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'state', 'config'), def); 
                 } 
@@ -179,11 +150,9 @@
 
         const updateUI = () => {
             const t = translations[state.lang];
-            const greetingEl = document.getElementById('ui-greeting');
-            if (greetingEl) greetingEl.innerText = t.greeting;
+            document.getElementById('ui-greeting').innerText = t.greeting;
             ['tasks', 'shop', 'goals', 'calendar'].forEach(x => { const el = document.getElementById(`tab-${x}`); if(el) el.innerText = t[x]; });
-            const balEl = document.getElementById('balance');
-            if (balEl) balEl.innerText = state.balance;
+            document.getElementById('balance').innerText = state.balance;
             updateLevelUI(); renderTasks(); renderShop(); renderGoals(); renderAdminLists();
         };
 
@@ -198,14 +167,49 @@
             document.getElementById('level-progress').style.width = p + "%";
         };
 
-        window.switchTab = (tab) => { ['tasks', 'shop', 'goals', 'calendar'].forEach(t => { document.getElementById(`section-${t}`).classList.add('hidden'); document.getElementById(`tab-${t}`).className = "flex-1 min-w-[90px] py-3 rounded-2xl font-bold transition-all bg-white text-slate-600 border border-slate-200"; }); document.getElementById(`section-${tab}`).classList.remove('hidden'); document.getElementById(`tab-${tab}`).className = "flex-1 min-w-[90px] py-3 rounded-2xl font-bold transition-all bg-blue-600 text-white shadow-md"; };
+        window.switchTab = (tab) => { ['tasks', 'shop', 'goals', 'calendar'].forEach(t => { document.getElementById(`section-${t}`).classList.add('hidden'); document.getElementById(`tab-${t}`).className = "flex-1 min-w-[90px] py-3 rounded-2xl font-bold transition-all bg-white text-slate-600 border border-slate-200 text-xs uppercase"; }); document.getElementById(`section-${tab}`).classList.remove('hidden'); document.getElementById(`tab-${tab}`).className = "flex-1 min-w-[90px] py-3 rounded-2xl font-bold transition-all bg-blue-600 text-white shadow-md text-xs uppercase"; };
         window.toggleLang = async () => await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'state', 'userState'), { lang: state.lang === 'uk' ? 'en' : 'uk' });
-        window.completeTask = async (id, pts) => { const task = config.tasks.find(t => t.id === id); await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'state', 'userState'), { balance: state.balance + pts, totalEarned: (state.totalEarned || 0) + pts, completedTasks: [...state.completedTasks, id] }); await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'history'), { timestamp: Date.now(), type: 'task', title: task.title[state.lang], value: pts, icon: task.icon || '🎯' }); showToast(`+${pts} ⭐`); };
-        window.buyReward = async (id, cost) => { const reward = config.shop.find(r => r.id === id); if(state.balance < cost) return; await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'state', 'userState'), { balance: state.balance - cost }); await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'history'), { timestamp: Date.now(), type: 'reward', title: reward.title[state.lang], value: cost, icon: reward.icon || '🎁' }); showToast(`🎁 Куплено!`); };
-        window.addItem = async (type) => { const pfx = (type === 'shop') ? 'shop' : type.slice(0, -1); const ua = document.getElementById(`${pfx}-title-ua`).value; const val = parseInt(document.getElementById(`${pfx}-${type === 'tasks' ? 'points' : 'cost'}`).value); if (!ua || isNaN(val)) return; config[type].push({ id: Date.now(), title: { uk: ua, en: ua }, icon: document.getElementById(`${pfx}-icon`).value || '✨', [type === 'tasks' ? 'points' : 'cost']: val }); await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'state', 'config'), config); showToast("Додано!"); };
-        window.handleDelete = async (type, id) => { if (deleteConfirmId === id) { config[type] = config[type].filter(i => i.id !== id); await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'state', 'config'), config); deleteConfirmId = null; showToast("Видалено!"); } else { deleteConfirmId = id; renderAdminLists(); setTimeout(() => { if (deleteConfirmId === id) { deleteConfirmId = null; renderAdminLists(); } }, 3000); } };
+        
+        window.completeTask = async (id, pts) => { 
+            const task = config.tasks.find(t => t.id === id); 
+            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'state', 'userState'), { balance: state.balance + pts, totalEarned: (state.totalEarned || 0) + pts, completedTasks: [...state.completedTasks, id] }); 
+            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'history'), { timestamp: Date.now(), type: 'task', title: task.title[state.lang], value: pts, icon: task.icon || '🎯' }); 
+            showToast(`+${pts} ⭐`); 
+        };
+        
+        window.buyReward = async (id, cost) => { 
+            const reward = config.shop.find(r => r.id === id); 
+            if(state.balance < cost) return; 
+            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'state', 'userState'), { balance: state.balance - cost }); 
+            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'history'), { timestamp: Date.now(), type: 'reward', title: reward.title[state.lang], value: cost, icon: reward.icon || '🎁' }); 
+            showToast(`🎁 Куплено!`); 
+        };
+        
+        window.addItem = async (type) => { 
+            const pfx = (type === 'shop') ? 'shop' : type.slice(0, -1); 
+            const titleUa = document.getElementById(`${pfx}-title-ua`).value; 
+            const val = parseInt(document.getElementById(`${pfx}-${type === 'tasks' ? 'points' : 'cost'}`).value); 
+            const icon = document.getElementById(`${pfx}-icon`).value;
+            if (!titleUa || isNaN(val)) return showToast("Заповніть назву та бали!"); 
+            config[type].push({ id: Date.now(), title: { uk: titleUa, en: titleUa }, icon: icon || '✨', [type === 'tasks' ? 'points' : 'cost']: val }); 
+            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'state', 'config'), config); 
+            showToast("Додано!"); 
+        };
+        
+        window.handleDelete = async (type, id) => { 
+            if (deleteConfirmId === id) { 
+                config[type] = config[type].filter(i => i.id !== id); 
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'state', 'config'), config); 
+                deleteConfirmId = null; 
+                showToast("Видалено!"); 
+            } else { 
+                deleteConfirmId = id; renderAdminLists(); 
+                setTimeout(() => { if (deleteConfirmId === id) { deleteConfirmId = null; renderAdminLists(); } }, 3000); 
+            } 
+        };
+        
         window.updateRankVal = (i, f, v) => { if (f === 'threshold') config.ranks[i].threshold = parseInt(v); else config.ranks[i].title.uk = v; };
-        window.saveRanks = async () => { config.ranks.sort((a,b)=>a.threshold-b.threshold); await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'state', 'config'), config); showToast("Збережено!"); };
+        window.saveRanks = async () => { config.ranks.sort((a,b)=>a.threshold-b.threshold); await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'state', 'config'), config); showToast("Рівні збережено!"); };
         
         window.showDayDetails = (ds) => { 
             selectedDateStr = ds; const logs = historyLogs.filter(l => toYMD(l.timestamp) === ds).sort((a,b) => b.timestamp - a.timestamp); 
@@ -213,45 +217,38 @@
             const bEl = document.getElementById('day-end-balance'); if(bEl) bEl.innerText = historyLogs.filter(l => l.timestamp <= new Date(ds + 'T23:59:59').getTime()).reduce((acc,l)=>l.type==='task'?acc+l.value:acc-l.value,0);
             const lEl = document.getElementById('details-logs'); if(!lEl) return;
             if(logs.length===0) lEl.innerHTML = `<p class='text-[10px] text-slate-400 italic py-4 text-center'>Активності немає</p>`;
-            else lEl.innerHTML = logs.map(l => `<div class='flex justify-between items-center bg-white p-3 rounded-2xl border border-slate-100 shadow-sm mb-2 text-xs'><div class='flex gap-2 items-center'><span class='text-[8px] text-slate-300 uppercase'>${new Date(l.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span><span>${l.icon||'🎯'}</span><span class='font-bold text-slate-700'>${l.title}</span></div><span class='font-black ${l.type==='task'?'text-green-500':'text-orange-500'}'>${l.type==='task'?'+':'-'}${l.value} ⭐</span></div>`).join('');
+            else lEl.innerHTML = logs.map(l => `<div class='flex justify-between items-center bg-white p-3 rounded-2xl border border-slate-100 shadow-sm mb-2 text-xs'><div class='flex gap-2 items-center'><span class='text-[8px] text-slate-300'>${new Date(l.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span><span>${l.icon||'🎯'}</span><span class='font-bold text-slate-700'>${l.title}</span></div><span class='font-black ${l.type==='task'?'text-green-500':'text-orange-500'}'>${l.type==='task'?'+':'-'}${l.value} ⭐</span></div>`).join('');
             document.getElementById('day-details').classList.remove('hidden'); renderCalendar();
         };
 
         const renderTasks = () => { const l = document.getElementById('tasks-list'); if(!l) return; l.innerHTML = config.tasks.map(t => `<div class='quest-card bg-white p-5 rounded-3xl flex items-center justify-between shadow-sm border border-slate-100'><div class='flex items-center gap-4'><div class='w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-2xl'>${t.icon}</div><div><h3 class='font-bold text-slate-800 ${state.completedTasks.includes(t.id)?'line-through text-slate-400':''}'>${t.title[state.lang]}</h3><p class='text-[10px] text-slate-400 font-black uppercase'>+${t.points} ⭐</p></div></div><button onclick='window.completeTask(${t.id},${t.points})' ${state.completedTasks.includes(t.id)?'disabled':''} class='px-5 py-3 rounded-2xl font-black text-xs transition-all ${state.completedTasks.includes(t.id)?'bg-slate-50 text-slate-300':'bg-blue-100 text-blue-600 active:bg-blue-600 active:text-white'}'>${state.completedTasks.includes(t.id)?translations[state.lang].done:`+${t.points} ⭐`}</button></div>`).join(''); };
         const renderShop = () => { const l = document.getElementById('shop-list'); if(!l) return; l.innerHTML = config.shop.map(i => `<div class='quest-card bg-white p-5 rounded-3xl flex flex-col gap-4 shadow-sm border border-slate-100'><div class='flex items-center gap-3'><div class='w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center text-xl'>${i.icon}</div><h3 class='font-bold text-slate-800 text-sm'>${i.title[state.lang]}</h3></div><button onclick='window.buyReward(${i.id},${i.cost})' ${state.balance < i.cost?'disabled':''} class='w-full py-3 rounded-2xl font-black text-xs transition-all ${state.balance >= i.cost?'bg-yellow-400 text-yellow-900 shadow-md':'bg-slate-50 text-slate-300'}'>${i.cost} ${translations[state.lang].buy}</button></div>`).join(''); };
         const renderGoals = () => { const l = document.getElementById('goals-list'); if(!l) return; l.innerHTML = config.goals.map(g => { const p = Math.min(100, Math.floor((state.balance/g.cost)*100)); return `<div class='bg-white p-5 rounded-3xl shadow-sm border border-slate-100 space-y-3'><div class='flex justify-between items-center'><div class='flex items-center gap-3'><span class='text-3xl'>${g.icon}</span><span class='font-bold text-slate-800 text-sm'>${g.title[state.lang]}</span></div><span class='text-blue-600 font-black text-xs'>${p}%</span></div><div class='w-full bg-slate-100 h-3 rounded-full overflow-hidden'><div class='bg-blue-500 h-full transition-all duration-1000' style='width: ${p}%'></div></div><div class='flex justify-between text-[8px] font-black text-slate-400 uppercase'><span>Баланс: ${state.balance} ⭐</span><span>Ціль: ${g.cost} ⭐</span></div></div>`; }).join(''); };
-        const renderCalendar = () => { const b = document.getElementById('calendar-body'); const mh = document.getElementById('calendar-month-year'); if(!b || !mh) return; const y = viewDate.getFullYear(); const m = viewDate.getMonth(); mh.innerText = viewDate.toLocaleDateString(state.lang==='uk'?'uk-UA':'en-US', {month:'long', year:'numeric'}); const fd = new Date(y, m, 1).getDay(); const dim = new Date(y, m+1, 0).getDate(); const off = fd === 0 ? 6 : fd - 1; let h = ""; for (let i = 0; i < off; i++) h += `<div></div>`; for (let d = 1; d <= dim; d++) { const ds = toYMD(new Date(y, m, d)); const earned = historyLogs.filter(l => toYMD(l.timestamp) === ds && l.type === 'task').reduce((s,l)=>s+l.value,0); const bal = historyLogs.filter(l => l.timestamp <= new Date(ds + 'T23:59:59').getTime()).reduce((acc,l)=>l.type==='task'?acc+l.value:acc-l.value,0); h += `<div onclick="window.showDayDetails('${ds}')" class='calendar-day cursor-pointer transition-all ${selectedDateStr===ds?'selected shadow-inner':'bg-slate-100 active:bg-slate-200'}'><span class='${selectedDateStr===ds?'text-blue-600':'text-slate-400'} text-[9px]'>${d}</span>${earned > 0 ? `<span class='text-green-600 text-[6px] font-black'>+${earned}</span>` : ''}${historyLogs.some(l=>toYMD(l.timestamp)===ds) ? `<span class='text-blue-500 text-[6px] font-black'>🪙 ${bal}</span>` : ''}</div>`; } b.innerHTML = h; };
-        const renderAdminLists = () => { ['tasks', 'shop', 'goals'].forEach(type => { const list = document.getElementById(`admin-list-${type}`); if (!list) return; list.innerHTML = config[type].map(i => `<div class='flex items-center justify-between bg-white p-4 rounded-2xl border border-slate-100 shadow-sm mb-2 text-xs'><div class='flex items-center gap-3'><span>${i.icon}</span><div><p class='font-bold text-slate-800'>${i.title.uk}</p><p class='text-[9px] text-slate-400 uppercase'>${i.points||i.cost} ⭐</p></div></div><button onclick="window.handleDelete('${type}',${i.id})" class='px-3 py-1 rounded-xl font-black uppercase text-[9px] ${deleteConfirmId===i.id?'bg-red-500 text-white':'bg-slate-50 text-red-400'}'>${deleteConfirmId===i.id?translations[state.lang].confirm_delete:'🗑️'}</button></div>`).join(''); }); };
+        const renderCalendar = () => { const b = document.getElementById('calendar-body'); const mh = document.getElementById('calendar-month-year'); if(!b || !mh) return; const y = viewDate.getFullYear(), m = viewDate.getMonth(); mh.innerText = viewDate.toLocaleDateString(state.lang==='uk'?'uk-UA':'en-US', {month:'long', year:'numeric'}); const fd = new Date(y, m, 1).getDay(); const dim = new Date(y, m+1, 0).getDate(); const off = fd === 0 ? 6 : fd - 1; let h = ""; for (let i = 0; i < off; i++) h += `<div></div>`; for (let d = 1; d <= dim; d++) { const ds = toYMD(new Date(y, m, d)); const earned = historyLogs.filter(l => toYMD(l.timestamp) === ds && l.type === 'task').reduce((s,l)=>s+l.value,0); const bal = historyLogs.filter(l => l.timestamp <= new Date(ds + 'T23:59:59').getTime()).reduce((acc,l)=>l.type==='task'?acc+l.value:acc-l.value,0); h += `<div onclick="window.showDayDetails('${ds}')" class='calendar-day cursor-pointer transition-all ${selectedDateStr===ds?'selected shadow-inner':'bg-slate-100 active:bg-slate-200'}'><span class='${selectedDateStr===ds?'text-blue-600':'text-slate-400'} text-[9px]'>${d}</span>${earned > 0 ? `<span class='text-green-600 text-[6px] font-black'>+${earned}</span>` : ''}${historyLogs.some(l=>toYMD(l.timestamp)===ds) ? `<span class='text-blue-500 text-[6px] font-black'>🪙 ${bal}</span>` : ''}</div>`; } b.innerHTML = h; };
+        const renderAdminLists = () => { ['tasks', 'shop', 'goals'].forEach(type => { const list = document.getElementById(`admin-list-${type}`); if (!list) return; list.innerHTML = config[type].map(i => `<div class='flex items-center justify-between bg-white p-4 rounded-2xl border border-slate-100 shadow-sm mb-2 text-xs'><div class='flex items-center gap-3'><span>${i.icon}</span><p class='font-bold text-slate-800'>${i.title.uk}</p></div><button onclick="window.handleDelete('${type}',${i.id})" class='px-3 py-1 rounded-xl font-black uppercase text-[9px] ${deleteConfirmId===i.id?'bg-red-500 text-white':'bg-slate-50 text-red-400'}'>${deleteConfirmId===i.id?translations[state.lang].confirm_delete:'🗑️'}</button></div>`).join(''); }); };
         const renderAdminRanks = () => { const c = document.getElementById('admin-ranks-inputs'); if(!c || !config.ranks) return; c.innerHTML = config.ranks.map((r, i) => `<div class='p-4 bg-slate-700/50 rounded-2xl border border-slate-600 space-y-2'><div class='flex justify-between items-center mb-1 text-white font-bold'><span class='text-[10px] uppercase opacity-50'>Ранг ${i+1}</span><input type='number' value='${r.threshold}' onchange="window.updateRankVal(${i},'threshold',this.value)" class='w-20 bg-slate-900 p-1 rounded-lg text-xs'></div><input type='text' value='${r.title.uk}' onchange="window.updateRankVal(${i},'uk',this.value)" class='w-full bg-slate-900 text-white p-2 rounded-lg text-xs'></div>`).join(''); };
 
         window.runSmokeTests = async () => {
             const overlay = document.getElementById('test-overlay'); const stepsEl = document.getElementById('test-steps'); overlay.classList.remove('hidden'); overlay.classList.add('flex'); stepsEl.innerHTML = "";
             const testSteps = [{id:"db",name:"DB Connection",status:"WAITING"},{id:"user",name:"User Context",status:"WAITING"},{id:"config",name:"Config Integrity",status:"WAITING"},{id:"task",name:"Task Engine",status:"WAITING"},{id:"levels",name:"Leveling Logic",status:"WAITING"},{id:"lang",name:"Lang Toggle",status:"WAITING"}];
-            const renderSteps = () => { stepsEl.innerHTML = testSteps.map(s => { const c = s.status==='PASSED'?'text-green-500':(s.status==='RUNNING'?'text-blue-500':(s.status==='FAILED'?'text-red-500':'text-slate-300')); return `<div class='flex justify-between items-center bg-slate-50 p-4 rounded-2xl border border-slate-100'><span class='text-[10px] font-black text-slate-800 uppercase'>${s.name}</span><span class='${c} font-black text-[10px]'>${s.status}</span></div>`; }).join(''); stepsEl.scrollTop = stepsEl.scrollHeight; };
+            const renderSteps = () => { stepsEl.innerHTML = testSteps.map(s => { const c = s.status==='PASSED'?'text-green-500':(s.status==='RUNNING'?'text-blue-500':(s.status==='FAILED'?'text-red-500':'text-slate-300')); return `<div class='flex justify-between items-center bg-slate-50 p-4 rounded-2xl border border-slate-100'><span class='text-[10px] font-black text-slate-800 uppercase'>${s.name}</span><span class='${c} font-black text-[10px]'>${s.status}</span></div>`; }).join(''); };
             const setS = (id, st) => { const s = testSteps.find(x => x.id === id); if(s) s.status = st; renderSteps(); };
-            try { 
-                setS("db", "RUNNING"); await new Promise(r=>setTimeout(r,800)); setS("db", "PASSED");
-                setS("user", "RUNNING"); if(user) setS("user", "PASSED"); else throw 1;
-                setS("config", "RUNNING"); if(config.tasks.length > 0) setS("config", "PASSED"); else throw 1;
-                setS("task", "RUNNING"); await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'history'), { timestamp: Date.now(), type: 'task', title: "Smoke Check", value: 0, icon: '🧪' }); setS("task", "PASSED");
-                setS("levels", "RUNNING"); setS("levels", "PASSED");
-                setS("lang", "RUNNING"); await window.toggleLang(); await new Promise(r=>setTimeout(r,500)); setS("lang", "PASSED"); await window.toggleLang();
-            } catch(e) { const r = testSteps.find(s=>s.status==='RUNNING'); if(r) setS(r.id, "FAILED"); }
+            try { setS("db", "RUNNING"); await new Promise(r=>setTimeout(r,500)); setS("db", "PASSED"); setS("user", "RUNNING"); if(user) setS("user", "PASSED"); else throw 1; setS("config", "RUNNING"); if(config.tasks.length > 0) setS("config", "PASSED"); else throw 1; setS("task", "RUNNING"); await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'history'), { timestamp: Date.now(), type: 'task', title: "Smoke Check", value: 0, icon: '🧪' }); setS("task", "PASSED"); setS("levels", "RUNNING"); setS("levels", "PASSED"); setS("lang", "RUNNING"); await window.toggleLang(); await new Promise(r=>setTimeout(r,500)); setS("lang", "PASSED"); await window.toggleLang(); } catch(e) { const r = testSteps.find(s=>s.status==='RUNNING'); if(r) setS(r.id, "FAILED"); }
         };
 
-        window.openPinPad = () => { pinB = ""; updateD(); document.getElementById('pin-modal').classList.remove('hidden'); };
+        window.openPinPad = () => { pinB = ""; updatePinDots(); document.getElementById('pin-modal').classList.remove('hidden'); };
         window.closeAdminModal = () => document.getElementById('admin-modal').classList.add('hidden');
         window.closePinPad = () => document.getElementById('pin-modal').classList.add('hidden');
         window.switchAdminTab = (t) => { document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active')); document.getElementById(`admin-tab-${t}`).classList.add('active'); ['general', 'tasks', 'shop', 'goals', 'ranks'].forEach(x => document.getElementById(`admin-content-${x}`).classList.add('hidden')); document.getElementById(`admin-content-${t}`).classList.remove('hidden'); deleteConfirmId = null; renderAdminLists(); };
         window.changeMonth = (d) => { viewDate.setMonth(viewDate.getMonth() + d); renderCalendar(); };
         window.updatePin = async () => { const v = document.getElementById('new-pin-input').value; if(v.length === 4) { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'state', 'userState'), { pin: v }); showToast("PIN оновлено!"); } };
-        window.addBonus = async (p) => { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'state', 'userState'), { balance: state.balance + p, totalEarned: (state.totalEarned||0)+p }); await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'history'), { timestamp: Date.now(), type: 'task', title: "Бонус ⭐", value: p, icon: '🎁' }); showToast("+50 ⭐"); };
+        window.addBonus = async (p) => { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'state', 'userState'), { balance: state.balance + p, totalEarned: (state.totalEarned||0)+p }); await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'history'), { timestamp: Date.now(), type: 'task', title: "Бонус ⭐", value: p, icon: '🎁' }); };
         window.confirmAction = async (a) => { if (a === 'resetTasks') { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'state', 'userState'), { completedTasks: [] }); showToast("Скинуто"); } };
 
         let pinB = "";
-        window.enterDigit = (d) => { pinB += d; updateD(); if (pinB.length === 4) { if (pinB === state.pin) { closePinPad(); document.getElementById('admin-modal').classList.remove('hidden'); window.switchAdminTab('general'); } else { pinB = ""; updateD(true); showToast("❌ Помилка"); } } };
-        const updateD = (e=false) => { const dots = document.getElementById('pin-dots').children; for(let i=0; i<4; i++) if (dots[i]) dots[i].className = e ? "w-4 h-4 rounded-full bg-red-500" : (i<pinB.length ? "w-4 h-4 rounded-full bg-blue-500 scale-125 transition-all" : "w-4 h-4 rounded-full bg-slate-700"); };
-        const renderPinButtons = () => { const g = document.getElementById('pin-grid'); if(!g) return; let h = ""; for(let i=1; i<=9; i++) h += `<button onclick="window.enterDigit(${i})" class='bg-white/10 text-white rounded-2xl py-4 font-black text-xl'>${i}</button>`; h += `<button onclick="pinB='';updateD();" class='bg-red-500/20 text-red-400 rounded-2xl py-4 font-bold'>C</button><button onclick="window.enterDigit(0)" class='bg-white/10 text-white rounded-2xl py-4 font-black text-xl'>0</button><button onclick="window.closePinPad()" class='bg-white/10 text-white rounded-2xl py-4 font-bold text-xl'>✕</button>`; g.innerHTML = h; };
+        window.enterDigit = (d) => { pinB += d; updatePinDots(); if (pinB.length === 4) { if (pinB === state.pin) { pinB = ""; closePinPad(); document.getElementById('admin-modal').classList.remove('hidden'); window.switchAdminTab('general'); } else { pinB = ""; updatePinDots(true); showToast("❌ Помилка"); } } };
+        const updatePinDots = (e=false) => { const dots = document.getElementById('pin-dots').children; for(let i=0; i<4; i++) if (dots[i]) dots[i].className = e ? "w-4 h-4 rounded-full bg-red-500" : (i<pinB.length ? "w-4 h-4 rounded-full bg-blue-500 scale-125" : "w-4 h-4 rounded-full bg-slate-700"); };
+        const renderPinButtons = () => { const g = document.getElementById('pin-grid'); if(!g) return; let h = ""; for(let i=1; i<=9; i++) h += `<button onclick="window.enterDigit(${i})" class='bg-white/10 text-white rounded-2xl py-4 font-black text-xl active:bg-white/30'>${i}</button>`; h += `<button onclick="pinB='';updatePinDots();" class='bg-red-500/20 text-red-400 rounded-2xl py-4 font-bold'>C</button><button onclick="window.enterDigit(0)" class='bg-white/10 text-white rounded-2xl py-4 font-black text-xl'>0</button><button onclick="window.closePinPad()" class='bg-white/10 text-white rounded-2xl py-4 font-bold text-xl'>✕</button>`; g.innerHTML = h; };
 
         function showToast(m) { const t = document.getElementById('toast'); if(!t) return; t.innerText = m; t.style.opacity = '1'; t.style.bottom = '3rem'; setTimeout(() => { t.style.opacity = '0'; t.style.bottom = '2rem'; }, 2500); }
         init();
