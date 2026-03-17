@@ -27,6 +27,14 @@
         .admin-tab-btn.active { background-color: #1e293b; color: white; border-left: 4px solid #3b82f6; }
         .reverted { opacity: 0.6; filter: grayscale(1); }
         
+        /* 3D Анімація для зірочки */
+        @keyframes coinFlip {
+            0% { transform: rotateY(0deg) scale(1); }
+            50% { transform: rotateY(180deg) scale(1.3); }
+            100% { transform: rotateY(360deg) scale(1); }
+        }
+        .flip-anim { animation: coinFlip 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        
         /* Адаптивний Sidebar */
         #sidebar { transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1); width: 80px; overflow: hidden; }
         #sidebar.expanded { width: 220px; }
@@ -60,26 +68,26 @@
             </div>
             
             <nav class="flex flex-col gap-3 mt-4">
-                <button onclick="window.switchTab('tasks')" id="tab-tasks" class="nav-item bg-blue-600 text-white shadow-md">
+                <button onclick="window.switchTab('tasks')" id="tab-tasks" class="nav-item bg-blue-600 text-white shadow-md transition-all">
                     <span class="icon-element">🎯</span>
                     <span class="nav-label">Квести</span>
                 </button>
-                <button onclick="window.switchTab('shop')" id="tab-shop" class="nav-item bg-white text-slate-400 hover:bg-slate-50">
+                <button onclick="window.switchTab('shop')" id="tab-shop" class="nav-item bg-white text-slate-400 hover:bg-slate-50 transition-all">
                     <span class="icon-element">🎁</span>
                     <span class="nav-label">Крамниця</span>
                 </button>
-                <button onclick="window.switchTab('goals')" id="tab-goals" class="nav-item bg-white text-slate-400 hover:bg-slate-50">
+                <button onclick="window.switchTab('goals')" id="tab-goals" class="nav-item bg-white text-slate-400 hover:bg-slate-50 transition-all">
                     <span class="icon-element">💎</span>
                     <span class="nav-label">Мрії</span>
                 </button>
-                <button onclick="window.switchTab('calendar')" id="tab-calendar" class="nav-item bg-white text-slate-400 hover:bg-slate-50">
+                <button onclick="window.switchTab('calendar')" id="tab-calendar" class="nav-item bg-white text-slate-400 hover:bg-slate-50 transition-all">
                     <span class="icon-element">📅</span>
                     <span class="nav-label">Історія</span>
                 </button>
             </nav>
 
             <div class="mt-auto pb-6 pt-2">
-                <button onclick="window.openPinPad(event)" class="nav-item bg-white text-slate-300 hover:text-slate-500">
+                <button onclick="window.openPinPad(event)" class="nav-item bg-white text-slate-300 hover:text-slate-500 transition-all">
                     <span class="icon-element">⚙️</span>
                     <span class="nav-label" id="nav-label-admin">Адмін</span>
                 </button>
@@ -88,6 +96,7 @@
 
         <!-- Головна область -->
         <div id="main-wrapper" class="flex-1 min-w-0 p-4 md:p-6">
+            <!-- Заставка завантаження -->
             <div id="loading" class="fixed inset-0 bg-white z-[300] flex items-center justify-center font-bold text-slate-600 text-center px-4">
                 <div><div class="text-5xl mb-4 animate-bounce">🚀</div><div class="text-xl font-black uppercase text-blue-600 tracking-tighter" id="ui-loading-text">Синхронізація...</div></div>
             </div>
@@ -104,9 +113,12 @@
                             </div>
                         </div>
                         <div class="flex items-center gap-4">
+                            <button onclick="window.cycleTaskFilter()" id="btn-task-filter" class="bg-blue-50 px-3 py-1.5 rounded-lg text-[9px] font-black text-blue-600 border border-blue-200 uppercase hover:bg-blue-100 transition-colors shadow-sm flex items-center gap-1">
+                                <span>⚙️</span> <span id="ui-filter-text">Дефолт</span>
+                            </button>
                             <button onclick="window.toggleLang()" class="bg-slate-100 px-3 py-1.5 rounded-lg text-[9px] font-black text-slate-500 border-2 border-slate-200 uppercase hover:bg-slate-200 transition-colors">UA / EN</button>
-                            <div id="balance-container" class="bg-yellow-400 px-6 py-3 rounded-[1.2rem] flex items-center gap-2 shadow-md border-b-4 border-yellow-600">
-                                <span class="text-xl">⭐</span>
+                            <div id="balance-container" onclick="window.clickBalance()" class="bg-yellow-400 px-6 py-3 rounded-[1.2rem] flex items-center gap-2 shadow-md border-b-4 border-yellow-600 active:scale-95 hover:bg-yellow-300 transition-all cursor-pointer">
+                                <span id="balance-star" class="text-xl inline-block">⭐</span>
                                 <span id="balance" class="text-3xl font-black text-yellow-900 leading-none">0</span>
                             </div>
                         </div>
@@ -133,7 +145,7 @@
                 <!-- Історія та Календар у дві колонки -->
                 <div id="section-calendar" class="hidden text-slate-800">
                     <div class="flex flex-col lg:flex-row gap-6 items-start">
-                        <!-- Default: Today's Details (Ліва колонка) -->
+                        <!-- Default: Today's Details -->
                         <div id="day-details" class="flex-1 w-full bg-white p-6 rounded-[2rem] border-2 border-slate-50 shadow-xl">
                             <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6 pb-4 border-b-2 border-slate-50">
                                 <div class="text-center sm:text-left">
@@ -147,7 +159,7 @@
                             <div id="details-logs" class="space-y-2 text-slate-800"></div>
                         </div>
 
-                        <!-- Hidden: Calendar Grid (Права колонка) -->
+                        <!-- Hidden: Calendar Grid -->
                         <div id="calendar-grid-container" class="hidden w-full lg:w-[420px] xl:w-[480px] shrink-0 bg-white p-6 rounded-[2rem] shadow-lg border-2 border-slate-50">
                             <div class="flex flex-col xl:flex-row justify-between items-center mb-6 gap-3">
                                 <h3 id="calendar-month-year" class="font-black uppercase text-sm"></h3>
@@ -183,6 +195,18 @@
         </div>
     </div>
 
+    <!-- Task Description Modal -->
+    <div id="desc-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-[450] cursor-pointer" onclick="this.classList.add('hidden'); this.classList.remove('flex');">
+        <div class="bg-white p-8 rounded-3xl max-w-sm w-full text-center shadow-2xl transform transition-all cursor-default" onclick="event.stopPropagation()">
+            <div class="text-6xl mb-4" id="desc-modal-icon">🎯</div>
+            <h2 class="text-xl font-black text-slate-800 mb-3" id="desc-modal-title">Назва</h2>
+            <p class="text-slate-600 font-medium text-sm leading-relaxed" id="desc-modal-text">Опис</p>
+            <div class="mt-6">
+                <button class="w-full bg-slate-100 text-slate-600 py-3 rounded-xl font-black uppercase text-xs hover:bg-slate-200 transition-colors" onclick="document.getElementById('desc-modal').classList.add('hidden'); document.getElementById('desc-modal').classList.remove('flex');">Зрозуміло</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Admin Panel -->
     <div id="admin-modal" class="fixed inset-0 bg-white hidden z-[500] overflow-y-auto">
         <div class="p-6 max-w-5xl mx-auto flex flex-col md:flex-row gap-8">
@@ -210,7 +234,7 @@
                     <button onclick="window.addBonus(50)" id="ui-admin-bonus" class="w-full py-5 bg-yellow-400 text-yellow-900 rounded-3xl font-black text-sm uppercase shadow-lg hover:bg-yellow-500 transition-colors">🎁 Дати бонус +50 ⭐</button>
                     <div class="p-6 bg-slate-50 rounded-2xl border-2 border-slate-100 text-center">
                         <p class="text-[10px] font-black text-slate-400 uppercase mb-3 text-center" id="ui-admin-change-pin">Зміна PIN-коду</p>
-                        <input type="text" id="new-pin-input" maxlength="4" class="w-full p-3 rounded-xl border-2 border-slate-200 mb-4 text-center font-black text-2xl focus:border-blue-500 outline-none text-slate-800">
+                        <input type="text" id="new-pin-input" maxlength="4" placeholder="Новий PIN" class="w-full p-3 rounded-xl border-2 border-slate-200 mb-4 text-center font-black text-2xl focus:border-blue-500 outline-none text-slate-800">
                         <button onclick="window.updatePin()" id="ui-admin-save-pin" class="w-full py-3 bg-slate-800 text-white rounded-xl text-xs font-black uppercase hover:bg-slate-900 transition-colors">Зберегти</button>
                     </div>
                 </div>
@@ -219,8 +243,23 @@
                 <div id="admin-content-tasks" class="hidden space-y-4">
                     <div class="bg-blue-600 p-4 rounded-2xl text-white shadow-md mb-4 text-center">
                         <p class="font-black uppercase text-[10px] mb-3 opacity-80 text-center text-white" id="ui-admin-new-quest">Новий квест</p>
-                        <div class="flex gap-2 mb-2"><input type="text" id="task-title-ua" class="flex-1 p-2 rounded-lg font-bold text-slate-800"><input type="number" id="task-points" placeholder="⭐" class="w-16 p-2 rounded-lg font-bold text-slate-800"></div>
-                        <input type="text" id="task-icon" placeholder="Emoji" class="w-full p-2 rounded-lg text-slate-800 font-bold mb-3 text-center">
+                        <div class="flex flex-col gap-2 mb-2">
+                            <input type="text" id="task-title-ua" placeholder="Назва (UA)" class="w-full p-2 rounded-lg font-bold text-slate-800">
+                            <input type="text" id="task-title-en" placeholder="Title (EN)" class="w-full p-2 rounded-lg font-bold text-slate-800">
+                            
+                            <!-- Нові поля для описів -->
+                            <textarea id="task-desc-ua" placeholder="Опис (UA)" class="w-full p-2 rounded-lg font-bold text-slate-800 text-xs" rows="2"></textarea>
+                            <textarea id="task-desc-en" placeholder="Description (EN)" class="w-full p-2 rounded-lg font-bold text-slate-800 text-xs" rows="2"></textarea>
+                            
+                            <div class="flex gap-2">
+                                <input type="number" id="task-points" placeholder="⭐" class="flex-1 p-2 rounded-lg font-bold text-slate-800">
+                                <input type="text" id="task-icon" placeholder="Emoji" class="w-20 p-2 rounded-lg text-slate-800 font-bold text-center">
+                            </div>
+                            <label class="flex items-center justify-center gap-2 mt-1 text-[10px] font-black text-white uppercase tracking-widest bg-blue-700/50 p-2 rounded-lg cursor-pointer">
+                                <input type="checkbox" id="task-required" class="w-4 h-4 rounded accent-blue-500">
+                                <span id="ui-admin-task-req">❗️ Обов'язкове</span>
+                            </label>
+                        </div>
                         <button onclick="window.addItem('tasks')" id="ui-admin-add-task" class="w-full bg-white text-blue-600 py-2 rounded-lg font-black uppercase text-[10px] hover:bg-slate-100 transition-colors">Додати</button>
                     </div>
                     <div id="admin-list-tasks" class="space-y-2"></div>
@@ -230,8 +269,14 @@
                 <div id="admin-content-shop" class="hidden space-y-4">
                     <div class="bg-orange-500 p-4 rounded-2xl text-white shadow-md mb-4 text-center">
                         <p class="font-black uppercase text-[10px] mb-3 opacity-80 text-center text-white" id="ui-admin-new-item">Новий товар</p>
-                        <div class="flex gap-2 mb-2"><input type="text" id="shop-title-ua" class="flex-1 p-2 rounded-lg font-bold text-slate-800"><input type="number" id="shop-cost" placeholder="⭐" class="w-16 p-2 rounded-lg font-bold text-slate-800"></div>
-                        <input type="text" id="shop-icon" placeholder="Emoji" class="w-full p-2 rounded-lg text-slate-800 font-bold mb-3 text-center">
+                        <div class="flex flex-col gap-2 mb-2">
+                            <input type="text" id="shop-title-ua" placeholder="Назва (UA)" class="w-full p-2 rounded-lg font-bold text-slate-800">
+                            <input type="text" id="shop-title-en" placeholder="Title (EN)" class="w-full p-2 rounded-lg font-bold text-slate-800">
+                            <div class="flex gap-2">
+                                <input type="number" id="shop-cost" placeholder="⭐" class="flex-1 p-2 rounded-lg font-bold text-slate-800">
+                                <input type="text" id="shop-icon" placeholder="Emoji" class="w-20 p-2 rounded-lg text-slate-800 font-bold text-center">
+                            </div>
+                        </div>
                         <button onclick="window.addItem('shop')" id="ui-admin-add-item" class="w-full bg-white text-orange-600 py-2 rounded-lg font-black uppercase text-[10px] hover:bg-slate-100 transition-colors">Додати</button>
                     </div>
                     <div id="admin-list-shop" class="space-y-2 text-slate-800"></div>
@@ -241,8 +286,14 @@
                 <div id="admin-content-goals" class="hidden space-y-4">
                     <div class="bg-purple-600 p-4 rounded-2xl text-white shadow-md mb-4 text-center">
                         <p class="font-black uppercase text-[10px] mb-3 opacity-80 text-center text-white" id="ui-admin-new-goal">Нова мрія</p>
-                        <div class="flex gap-2 mb-2"><input type="text" id="goal-title-ua" class="flex-1 p-2 rounded-lg font-bold text-slate-800"><input type="number" id="goal-cost" placeholder="⭐" class="w-16 p-2 rounded-lg font-bold text-slate-800"></div>
-                        <input type="text" id="goal-icon" placeholder="Emoji" class="w-full p-2 rounded-lg text-slate-800 font-bold mb-3 text-center">
+                        <div class="flex flex-col gap-2 mb-2">
+                            <input type="text" id="goal-title-ua" placeholder="Назва (UA)" class="w-full p-2 rounded-lg font-bold text-slate-800">
+                            <input type="text" id="goal-title-en" placeholder="Title (EN)" class="w-full p-2 rounded-lg font-bold text-slate-800">
+                            <div class="flex gap-2">
+                                <input type="number" id="goal-cost" placeholder="⭐" class="flex-1 p-2 rounded-lg font-bold text-slate-800">
+                                <input type="text" id="goal-icon" placeholder="Emoji" class="w-20 p-2 rounded-lg text-slate-800 font-bold text-center">
+                            </div>
+                        </div>
                         <button onclick="window.addItem('goals')" id="ui-admin-add-goal" class="w-full bg-white text-purple-600 py-2 rounded-lg font-black uppercase text-[10px] hover:bg-slate-100 transition-colors">Додати</button>
                     </div>
                     <div id="admin-list-goals" class="space-y-2 text-slate-800"></div>
@@ -252,9 +303,10 @@
                 <div id="admin-content-ranks" class="hidden space-y-4">
                     <div class="bg-indigo-600 p-4 rounded-2xl text-white shadow-md mb-4 text-center">
                         <p class="font-black uppercase text-[10px] mb-3 opacity-80 text-center text-white" id="ui-admin-new-rank">Новий ранг</p>
-                        <div class="flex gap-2 mb-2">
-                            <input type="text" id="rank-title-ua" class="flex-1 p-2 rounded-lg font-bold text-slate-800">
-                            <input type="number" id="rank-threshold" placeholder="⭐" class="w-20 p-2 rounded-lg font-bold text-slate-800">
+                        <div class="flex flex-col gap-2 mb-2">
+                            <input type="text" id="rank-title-ua" placeholder="Назва (UA)" class="w-full p-2 rounded-lg font-bold text-slate-800">
+                            <input type="text" id="rank-title-en" placeholder="Title (EN)" class="w-full p-2 rounded-lg font-bold text-slate-800">
+                            <input type="number" id="rank-threshold" placeholder="⭐" class="w-full p-2 rounded-lg font-bold text-slate-800">
                         </div>
                         <button onclick="window.addItem('ranks')" id="ui-admin-add-rank" class="w-full bg-white text-indigo-600 py-2 rounded-lg font-black uppercase text-[10px] hover:bg-slate-100 transition-colors">Додати</button>
                     </div>
@@ -287,12 +339,12 @@
         </div>
     </div>
 
-    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-10 py-5 rounded-full font-black shadow-2xl opacity-0 transition-all pointer-events-none z-[600] text-sm text-center whitespace-nowrap"></div>
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-800 text-white px-10 py-5 rounded-full font-black shadow-2xl opacity-0 transition-all pointer-events-none z-[600] text-sm text-center whitespace-pre-line leading-relaxed min-w-[250px]"></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, collection, onSnapshot, updateDoc, addDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, collection, onSnapshot, updateDoc, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDXefvcIw-hwiDIJy16870aqUYII0KN6q0",
@@ -308,7 +360,7 @@
         const db = getFirestore(app);
         const appId = 'mark-quest-ss-clean';
 
-        let state = { balance: 0, totalEarned: 0, completedTasks: [], lang: 'uk', pin: '0000' };
+        let state = { balance: 0, totalEarned: 0, completedTasks: [], lang: 'uk', pin: '0000', lastResetDate: '' };
         let config = { tasks: [], shop: [], goals: [], ranks: [] };
         let historyLogs = [];
         let user = null;
@@ -320,130 +372,94 @@
         let isExpanded = false;
         let isCalendarOpen = false;
         let editingState = { tasks: null, shop: null, goals: null, ranks: null };
+        let currentTaskFilter = 'default'; // 'default', 'required', 'incomplete'
 
-        // --- FULL TRANSLATIONS DICTIONARY ---
+        const setElText = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
+        const setElHTML = (id, val) => { const el = document.getElementById(id); if (el) el.innerHTML = val; };
+        const setElPlaceholder = (id, val) => { const el = document.getElementById(id); if (el) el.placeholder = val; };
+
         const translations = {
             uk: { 
-                greeting: "Марк, вперед! 🚀", 
-                tasks: "Квести", 
-                shop: "Крамниця", 
-                goals: "Мрії", 
-                calendar: "Історія", 
-                done: "✅ Готово", 
-                buy: "КУПИТИ",
-                syncing: "Синхронізація...",
-                level: "Рівень",
-                admin: "Адмін",
-                day_balance: "Зароблено:",
-                no_activity: "Активності немає",
-                parent_access: "Доступ для<br>батьків",
-                settings: "Налаштування",
-                back: "Повернутись",
-                general: "Головне",
-                audit: "Аудит",
-                ranks: "Рівні",
-                reset_tasks: "🔄 Скинути завдання на сьогодні",
-                give_bonus: "🎁 Дати бонус +50 ⭐",
-                change_pin: "Зміна PIN-коду",
-                new_pin: "Новий PIN",
-                save: "Зберегти",
-                new_quest: "Новий квест",
-                new_item: "Новий товар",
-                new_goal: "Нова мрія",
-                new_rank: "Новий ранг",
-                name: "Назва",
-                add: "Додати",
-                audit_log: "Календар",
-                audit_day_title: "📝 Журнал перевірки за день",
-                reward: "Нагорода",
-                target: "Ціль:",
-                cancel: "Скасувати",
-                cancelled: "СКАСОВАНО",
-                reverted_mark_note: "Скасовано (перевір у тата)",
-                open_calendar: "📅 Відкрити календар",
-                close_calendar: "Сховати календар",
-                month_total: "За місяць:",
-                today: "Сьогодні",
-                toast_pin_updated: "PIN оновлено!",
-                toast_bonus: "+50 ⭐",
-                toast_reset: "Скинуто",
-                toast_fill_fields: "Заповніть поля!",
-                toast_added: "Додано!",
-                toast_updated: "Оновлено!",
-                toast_wrong_pin: "❌ Невірний PIN",
-                toast_cancelled: "↩️ Скасовано",
-                toast_bought: "🎁 Куплено!"
+                greeting: "Марк, вперед! 🚀", tasks: "Квести", shop: "Крамниця", goals: "Мрії", calendar: "Історія", 
+                done: "✅ Готово", buy: "КУПИТИ", syncing: "Синхронізація...", level: "Рівень", admin: "Адмін",
+                day_balance: "Зароблено:", no_activity: "Активності немає", parent_access: "Доступ для<br>батьків",
+                settings: "Налаштування", back: "Повернутись", general: "Головне", audit: "Аудит", ranks: "Рівні",
+                reset_tasks: "🔄 Скинути завдання на сьогодні", give_bonus: "🎁 Дати бонус +50 ⭐", change_pin: "Зміна PIN-коду",
+                new_pin: "Новий PIN", save: "Зберегти", new_quest: "Новий квест", new_item: "Новий товар", new_goal: "Нова мрія",
+                new_rank: "Новий ранг", name: "Назва", add: "Додати", audit_log: "Календар", audit_day_title: "📝 Журнал перевірки за день",
+                reward: "Нагорода", target: "Ціль:", cancel: "Скасувати", cancelled: "СКАСОВАНО", reverted_mark_note: "Скасовано (перевір у тата)",
+                open_calendar: "📅 Відкрити календар", close_calendar: "Сховати календар", month_total: "За місяць:", today: "Сьогодні",
+                toast_pin_updated: "PIN оновлено!", toast_bonus: "+50 ⭐", toast_reset: "Скинуто", toast_fill_fields: "Заповніть поля!",
+                toast_added: "Додано!", toast_updated: "Оновлено!", toast_wrong_pin: "❌ Невірний PIN", toast_cancelled: "↩️ Скасовано", toast_bought: "🎁 Куплено!",
+                required: "Обов'язкове", shop_locked: "🔒 Спочатку виконай обов'язкові квести:", no_desc: "Опис відсутній",
+                filter_default: "Дефолт", filter_required: "❗️ Обов'язкові", filter_incomplete: "🔄 Невиконані"
             },
             en: { 
-                greeting: "Go Mark! 🚀", 
-                tasks: "Quests", 
-                shop: "Shop", 
-                goals: "Dreams", 
-                calendar: "History", 
-                done: "✅ Done", 
-                buy: "BUY",
-                syncing: "Syncing...",
-                level: "Level",
-                admin: "Admin",
-                day_balance: "Earned:",
-                no_activity: "No activity today",
-                parent_access: "Parent<br>Access",
-                settings: "Settings",
-                back: "Go Back",
-                general: "General",
-                audit: "Audit",
-                ranks: "Ranks",
-                reset_tasks: "🔄 Reset tasks for today",
-                give_bonus: "🎁 Give +50 ⭐ bonus",
-                change_pin: "Change PIN code",
-                new_pin: "New PIN",
-                save: "Save",
-                new_quest: "New quest",
-                new_item: "New item",
-                new_goal: "New dream",
-                new_rank: "New rank",
-                name: "Name",
-                add: "Add",
-                audit_log: "Calendar",
-                audit_day_title: "📝 Daily Audit Log",
-                reward: "Reward",
-                target: "Target:",
-                cancel: "Cancel",
-                cancelled: "CANCELLED",
-                reverted_mark_note: "Reverted (ask Dad)",
-                open_calendar: "📅 Open Calendar",
-                close_calendar: "Hide Calendar",
-                month_total: "Monthly:",
-                today: "Today",
-                toast_pin_updated: "PIN updated!",
-                toast_bonus: "+50 ⭐",
-                toast_reset: "Tasks reset",
-                toast_fill_fields: "Fill in the fields!",
-                toast_added: "Added!",
-                toast_updated: "Updated!",
-                toast_wrong_pin: "❌ Wrong PIN",
-                toast_cancelled: "↩️ Action reverted",
-                toast_bought: "🎁 Bought!"
+                greeting: "Go Mark! 🚀", tasks: "Quests", shop: "Shop", goals: "Dreams", calendar: "History", 
+                done: "✅ Done", buy: "BUY", syncing: "Syncing...", level: "Level", admin: "Admin",
+                day_balance: "Earned:", no_activity: "No activity today", parent_access: "Parent<br>Access",
+                settings: "Settings", back: "Go Back", general: "General", audit: "Audit", ranks: "Ranks",
+                reset_tasks: "🔄 Reset tasks for today", give_bonus: "🎁 Give +50 ⭐ bonus", change_pin: "Change PIN code",
+                new_pin: "New PIN", save: "Save", new_quest: "New quest", new_item: "New item", new_goal: "New dream",
+                new_rank: "New rank", name: "Name", add: "Add", audit_log: "Calendar", audit_day_title: "📝 Daily Audit Log",
+                reward: "Reward", target: "Target:", cancel: "Cancel", cancelled: "CANCELLED", reverted_mark_note: "Reverted (ask Dad)",
+                open_calendar: "📅 Open Calendar", close_calendar: "Hide Calendar", month_total: "Monthly:", today: "Today",
+                toast_pin_updated: "PIN updated!", toast_bonus: "+50 ⭐", toast_reset: "Tasks reset", toast_fill_fields: "Fill in the fields!",
+                toast_added: "Added!", toast_updated: "Updated!", toast_wrong_pin: "❌ Wrong PIN", toast_cancelled: "↩️ Action reverted", toast_bought: "🎁 Bought!",
+                required: "Required", shop_locked: "🔒 Complete required quests first:", no_desc: "No description provided",
+                filter_default: "Default", filter_required: "❗️ Required", filter_incomplete: "🔄 Incomplete"
             }
         };
+
+        const ukMotivations = [ "Так тримати! Ти молодець! 🚀", "Супер! Продовжуй в тому ж дусі! 🔥", "Ти справжній герой квестів! 🦸‍♂️", "Твої старання вражають! 🌟", "Ніколи не здавайся! 💪", "Ти на шляху до величі! 👑", "Фантастичний результат! 🎯", "Кожна зірка робить тебе сильнішим! ✨", "Ти можеш все! 🥇", "Твоя енергія заряджає! ⚡", "Просто космос! 🌌", "Крок за кроком до мрії! 🏔️", "Неймовірно! Ти супер! 💫", "Продовжуй підкорювати вершини! 🧗‍♂️", "З тобою ніхто не зрівняється! 🏆" ];
+        const enMotivations = [ "Keep it up! You're doing great! 🚀", "Super! Keep going! 🔥", "You are a true quest hero! 🦸‍♂️", "Your effort is amazing! 🌟", "Never give up! 💪", "You are on the path to greatness! 👑", "Fantastic result! 🎯", "Every star makes you stronger! ✨", "You can do anything! 🥇", "Your energy is inspiring! ⚡", "Simply cosmic! 🌌", "Step by step to your dream! 🏔️", "Incredible! You're super! 💫", "Keep conquering the peaks! 🧗‍♂️", "No one compares to you! 🏆" ];
 
         function toYMD(d) { const date = new Date(d); return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`; }
         function showToast(m) { const t = document.getElementById('toast'); if(!t) return; t.innerText = m; t.style.opacity = '1'; t.style.bottom = '3rem'; setTimeout(() => { t.style.opacity = '0'; t.style.bottom = '2rem'; }, 2500); }
 
+        const getTitle = (obj) => {
+            if (!obj || !obj.title) return '';
+            if (typeof obj.title === 'string') return obj.title;
+            const currentLang = state.lang || 'uk';
+            return obj.title[currentLang] || obj.title.uk || '';
+        };
+        
+        const getDesc = (obj) => {
+            if (!obj || !obj.desc) return '';
+            if (typeof obj.desc === 'string') return obj.desc;
+            const currentLang = state.lang || 'uk';
+            return obj.desc[currentLang] || obj.desc.uk || '';
+        }
+
         function renderTasks() { 
             const l = document.getElementById('tasks-list'); if(!l) return;
-            const t = translations[state.lang];
-            l.innerHTML = config.tasks.map(task => `
-                <div class='quest-card bg-white p-5 rounded-[1.5rem] flex items-center justify-between shadow-sm border-slate-100 hover:border-blue-100 transition-colors'>
-                    <div class='flex items-center gap-4 text-slate-800'>
-                        <div class='w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center text-3xl shadow-inner'>${task.icon}</div>
+            const currentLang = state.lang || 'uk';
+            const t = translations[currentLang] || translations['uk'];
+            
+            let displayTasks = [...(config.tasks || [])];
+            if (currentTaskFilter === 'required') {
+                displayTasks.sort((a, b) => (b.isRequired ? 1 : 0) - (a.isRequired ? 1 : 0));
+            } else if (currentTaskFilter === 'incomplete') {
+                displayTasks.sort((a, b) => {
+                    const aDone = state.completedTasks.includes(a.id) ? 1 : 0;
+                    const bDone = state.completedTasks.includes(b.id) ? 1 : 0;
+                    return aDone - bDone;
+                });
+            }
+
+            l.innerHTML = displayTasks.map(task => `
+                <div class='quest-card bg-white p-5 rounded-[1.5rem] flex items-center justify-between shadow-sm border-slate-100 hover:border-blue-100 transition-colors cursor-pointer' onclick='window.showTaskDesc(${task.id})'>
+                    <div class='flex items-center gap-4 text-slate-800 pointer-events-none'>
+                        <div class='w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center text-3xl shadow-inner'>${task.icon || '🎯'}</div>
                         <div>
-                            <h3 class='font-black text-lg ${state.completedTasks.includes(task.id)?'line-through text-slate-300':''}'>${task.title[state.lang] || task.title.uk}</h3>
+                            <h3 class='font-black text-lg ${state.completedTasks.includes(task.id)?'line-through text-slate-300':''}'>
+                                ${task.isRequired ? '<span class="text-red-500 mr-1">❗️</span>' : ''}${getTitle(task)}
+                            </h3>
                             <p class='text-[9px] text-blue-500 font-black uppercase tracking-widest mt-0.5'>+${task.points} ⭐ ${t.reward}</p>
                         </div>
                     </div>
-                    <button onclick='window.completeTask(${task.id},${task.points})' ${state.completedTasks.includes(task.id)?'disabled':''} 
-                        class='px-6 py-3 rounded-xl font-black text-sm transition-all ${state.completedTasks.includes(task.id)?'bg-slate-50 text-slate-300':'bg-blue-100 text-blue-700 active:bg-blue-600 active:text-white shadow-sm hover:shadow-md'}'>
+                    <button onclick='event.stopPropagation(); window.completeTask(${task.id},${task.points})' ${state.completedTasks.includes(task.id)?'disabled':''} 
+                        class='px-6 py-3 rounded-xl font-black text-sm transition-all ${state.completedTasks.includes(task.id)?'bg-slate-50 text-slate-300 cursor-not-allowed':'bg-blue-100 text-blue-700 active:bg-blue-600 active:text-white shadow-sm hover:shadow-md relative z-10'}'>
                         ${state.completedTasks.includes(task.id) ? t.done : `+${task.points} ⭐`}
                     </button>
                 </div>`).join(''); 
@@ -451,29 +467,40 @@
 
         function renderShop() {
             const container = document.getElementById('shop-list-container'); if(!container) return;
-            const t = translations[state.lang];
-            container.innerHTML = (config.shop || []).map(i => `
-                <div class='quest-card bg-white p-6 rounded-2xl flex flex-col gap-4 shadow-sm border-slate-100 hover:border-orange-100 transition-colors text-slate-800'>
+            const currentLang = state.lang || 'uk';
+            const t = translations[currentLang] || translations['uk'];
+            
+            const requiredTasks = (config.tasks || []).filter(task => task.isRequired);
+            const uncompletedReq = requiredTasks.filter(task => !state.completedTasks.includes(task.id));
+            const shopLocked = uncompletedReq.length > 0;
+            
+            let html = shopLocked ? `<div class="col-span-full bg-red-100 text-red-700 p-4 rounded-2xl font-black text-center text-xs uppercase tracking-widest shadow-inner mb-2 border border-red-200">${t.shop_locked} ${uncompletedReq.length}</div>` : '';
+
+            html += (config.shop || []).map(i => `
+                <div class='quest-card bg-white p-6 rounded-2xl flex flex-col gap-4 shadow-sm border-slate-100 hover:border-orange-100 transition-colors text-slate-800 ${shopLocked ? 'opacity-50 grayscale' : ''}'>
                     <div class='flex items-center gap-4'>
-                        <div class='w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center text-2xl'>${i.icon}</div>
-                        <h3 class='font-black text-base'>${i.title[state.lang] || i.title.uk}</h3>
+                        <div class='w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center text-2xl'>${i.icon || '🎁'}</div>
+                        <h3 class='font-black text-base'>${getTitle(i)}</h3>
                     </div>
-                    <button onclick='window.buyReward(${i.id},${i.cost})' ${state.balance < i.cost?'disabled':''} 
-                        class='w-full py-4 rounded-xl font-black text-sm transition-all ${state.balance >= i.cost?'bg-yellow-400 text-yellow-900 border-b-4 border-yellow-600 active:scale-95 hover:bg-yellow-300':'bg-slate-50 text-slate-300'}'>
+                    <button onclick='window.buyReward(${i.id},${i.cost})' ${state.balance < i.cost || shopLocked ? 'disabled' : ''} 
+                        class='w-full py-4 rounded-xl font-black text-sm transition-all ${state.balance >= i.cost && !shopLocked ? 'bg-yellow-400 text-yellow-900 border-b-4 border-yellow-600 active:scale-95 hover:bg-yellow-300' : 'bg-slate-50 text-slate-400 cursor-not-allowed'}'>
                         ${i.cost} ⭐ ${t.buy}
                     </button>
                 </div>`).join('');
+                
+            container.innerHTML = html;
         }
 
         function renderGoals() {
             const l = document.getElementById('goals-list'); if(!l) return;
-            const t = translations[state.lang];
+            const currentLang = state.lang || 'uk';
+            const t = translations[currentLang] || translations['uk'];
             l.innerHTML = config.goals.map(g => {
                 const p = Math.min(100, Math.floor((state.balance/g.cost)*100));
                 return `
                 <div class='bg-white p-6 rounded-2xl shadow-sm border-slate-100 space-y-3 text-slate-800 hover:border-blue-100 transition-colors'>
                     <div class='flex justify-between items-center text-slate-800'>
-                        <div class='flex items-center gap-4'><span class='text-4xl'>${g.icon}</span><span class='font-black text-xl'>${g.title[state.lang] || g.title.uk}</span></div>
+                        <div class='flex items-center gap-4'><span class='text-4xl'>${g.icon || '💎'}</span><span class='font-black text-xl'>${getTitle(g)}</span></div>
                         <span class='text-blue-600 font-black text-lg'>${p}%</span>
                     </div>
                     <div class='w-full bg-slate-100 h-5 rounded-full overflow-hidden border-2 border-slate-50'><div class='bg-blue-500 h-full transition-all duration-1000' style='width: ${p}%'></div></div>
@@ -485,12 +512,24 @@
         function renderAdminLists() {
             ['tasks', 'shop', 'goals', 'ranks'].forEach(type => {
                 const list = document.getElementById(`admin-list-${type}`); if (!list) return;
-                list.innerHTML = (config[type] || []).sort((a,b) => (a.threshold || 0) - (b.threshold || 0)).map(i => `
+                
+                const items = type === 'ranks' 
+                    ? [...(config[type] || [])].sort((a,b) => (a.threshold || 0) - (b.threshold || 0))
+                    : (config[type] || []);
+
+                list.innerHTML = items.map((i, index) => `
                     <div class='flex items-center justify-between bg-white p-3 rounded-xl border border-slate-100 mb-2 text-slate-800 shadow-sm'>
                         <div class='flex items-center gap-3'>
+                            ${type !== 'ranks' ? `
+                            <div class="flex flex-col gap-1 mr-1 bg-slate-50 p-1 rounded-lg">
+                                <button onclick="window.moveItem('${type}', ${index}, -1)" class="text-[8px] text-slate-400 hover:text-blue-600 ${index === 0 ? 'opacity-20 cursor-default' : ''}">▲</button>
+                                <button onclick="window.moveItem('${type}', ${index}, 1)" class="text-[8px] text-slate-400 hover:text-blue-600 ${index === items.length - 1 ? 'opacity-20 cursor-default' : ''}">▼</button>
+                            </div>` : ''}
                             ${i.icon ? `<span class='text-xl'>${i.icon}</span>` : ''}
-                            <p class='font-black text-xs'>${i.title?.[state.lang] || i.title?.uk || i.title || ''}</p>
-                            <span class='text-[9px] font-bold text-slate-400 uppercase'>(${i.points || i.cost || i.threshold || 0} ⭐)</span>
+                            <div>
+                                <p class='font-black text-xs'>${i.isRequired && type === 'tasks' ? '<span class="text-red-500">❗️</span> ' : ''}${getTitle(i)}</p>
+                                <span class='text-[9px] font-bold text-slate-400 uppercase'>(${i.points || i.cost || i.threshold || 0} ⭐)</span>
+                            </div>
                         </div>
                         <div class='flex gap-1'>
                             <button onclick="window.editItem('${type}',${i.id || i.threshold})" class='text-blue-500 hover:bg-blue-50 font-black text-xs p-2 rounded-lg transition-colors'>✏️</button>
@@ -502,7 +541,8 @@
 
         function renderAuditHistory() {
             const l = document.getElementById('admin-audit-logs'); if(!l) return;
-            const t = translations[state.lang];
+            const currentLang = state.lang || 'uk';
+            const t = translations[currentLang] || translations['uk'];
             const ds = auditDateStr || toYMD(new Date());
             const filtered = historyLogs.filter(log => toYMD(log.timestamp) === ds).sort((a,b) => b.timestamp - a.timestamp);
             l.innerHTML = filtered.length === 0 ? `<p class='text-center py-6 text-slate-400 italic text-xs text-center'>${t.no_activity}</p>` : filtered.map(log => `
@@ -510,15 +550,20 @@
                     <div class='flex items-center gap-3'><span class='text-2xl'>${log.icon||'🎯'}</span><div><p class='font-black text-[10px]'>${log.title}</p><p class='text-[7px] text-slate-400 font-bold'>${new Date(log.timestamp).toLocaleTimeString()}</p>${log.reverted ? `<p class='text-[7px] text-red-500 font-black uppercase mt-0.5'>${t.cancelled}: ${new Date(log.revertedAt).toLocaleTimeString()}</p>` : ''}</div></div>
                     <div class='flex items-center gap-4 text-slate-800'>
                         <span class='font-black text-sm ${log.type==='task'?'text-green-500':'text-orange-500'}'>${log.type==='task'?'+':'-'}${log.value}</span>
-                        ${!log.reverted ? `<button onclick="window.revertAction('${log.id}', '${log.type}', ${log.value}, ${log.taskId || 'null'})" class='bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-colors p-2 rounded-lg text-xs'>${t.cancel}</button>` : ''}
+                        ${!log.reverted ? `<button onclick="window.revertAction('${log.id}', '${log.type}', ${log.value}, '${log.taskId || ''}')" class='bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-colors p-2 rounded-lg text-xs'>${t.cancel}</button>` : ''}
                     </div>
                 </div>`).join('');
         }
 
         function renderAuditCalendar() {
-            const b = document.getElementById('audit-calendar-body'); const h = document.getElementById('audit-calendar-header-title'); if(!b || !h) return;
-            const y = auditDate.getFullYear(), m = auditDate.getMonth(); h.innerText = auditDate.toLocaleDateString(state.lang==='uk'?'uk-UA':'en-US', {month:'long', year:'numeric'});
+            const b = document.getElementById('audit-calendar-body'); 
+            if(!b) return;
+            const currentLang = state.lang || 'uk';
+            setElText('audit-calendar-header-title', auditDate.toLocaleDateString(currentLang==='uk'?'uk-UA':'en-US', {month:'long', year:'numeric'}));
+            
+            const y = auditDate.getFullYear(), m = auditDate.getMonth(); 
             const fd = new Date(y, m, 1).getDay(); const dim = new Date(y, m+1, 0).getDate(); const off = fd === 0 ? 6 : fd - 1;
+            
             let html = ""; for (let i = 0; i < off; i++) html += `<div></div>`;
             for (let d = 1; d <= dim; d++) {
                 const ds = toYMD(new Date(y, m, d));
@@ -533,11 +578,14 @@
         }
 
         function renderCalendar() {
-            const b = document.getElementById('calendar-body'); const mh = document.getElementById('calendar-month-year'); if(!b || !mh) return;
-            const t = translations[state.lang];
-            const y = viewDate.getFullYear(), m = viewDate.getMonth(); mh.innerText = viewDate.toLocaleDateString(state.lang==='uk'?'uk-UA':'en-US', {month:'long', year:'numeric'});
-            const fd = new Date(y, m, 1).getDay(); const dim = new Date(y, m+1, 0).getDate(); const off = fd === 0 ? 6 : fd - 1;
+            const b = document.getElementById('calendar-body'); 
+            if(!b) return;
+            const currentLang = state.lang || 'uk';
+            const t = translations[currentLang] || translations['uk'];
+            const y = viewDate.getFullYear(), m = viewDate.getMonth(); 
+            setElText('calendar-month-year', viewDate.toLocaleDateString(currentLang==='uk'?'uk-UA':'en-US', {month:'long', year:'numeric'}));
             
+            const fd = new Date(y, m, 1).getDay(); const dim = new Date(y, m+1, 0).getDate(); const off = fd === 0 ? 6 : fd - 1;
             const totalTasksAvailable = config.tasks ? config.tasks.length : 0;
             let monthTotal = 0;
             let h = ""; 
@@ -550,7 +598,6 @@
                 const earned = dayLogs.reduce((s,l)=> l.type==='task' ? s+l.value : s, 0);
                 monthTotal += earned;
                 
-                // End of day balance logic remains exactly the same
                 const bal = historyLogs.filter(l => l.timestamp <= new Date(ds + 'T23:59:59').getTime()).reduce((acc,l)=> l.reverted ? acc : (l.type==='task' ? acc+l.value : acc-l.value), 0);
                 
                 h += `<div onclick="window.showDayDetails('${ds}')" class='calendar-day cursor-pointer p-2 transition-all ${selectedDateStr===ds?'selected border-blue-400 shadow-md':'bg-slate-50 hover:bg-slate-100'} text-slate-800'>
@@ -574,67 +621,116 @@
             if (!config.ranks || config.ranks.length === 0) return;
             const total = state.totalEarned || 0;
             let ci = 0; for (let i = config.ranks.length - 1; i >= 0; i--) if (total >= config.ranks[i].threshold) { ci = i; break; }
-            const rankEl = document.getElementById('user-rank'); if(rankEl) rankEl.innerText = config.ranks[ci].title[state.lang] || config.ranks[ci].title.uk;
-            const levelEl = document.getElementById('user-level'); if(levelEl) levelEl.innerText = ci + 1;
+            setElText('user-rank', getTitle(config.ranks[ci]));
+            setElText('user-level', ci + 1);
             const next = config.ranks[ci + 1];
             const p = next ? Math.min(100, Math.max(0, ((total - config.ranks[ci].threshold) / (next.threshold - config.ranks[ci].threshold)) * 100)) : 100;
             const progEl = document.getElementById('level-progress'); if(progEl) progEl.style.width = p + "%";
         }
 
+        window.clickBalance = function() {
+            const star = document.getElementById('balance-star');
+            if (star) {
+                star.classList.remove('flip-anim');
+                void star.offsetWidth;
+                star.classList.add('flip-anim');
+            }
+
+            const total = state.totalEarned || 0;
+            let nextRank = null;
+            if (config.ranks && config.ranks.length > 0) {
+                const sortedRanks = [...config.ranks].sort((a,b) => a.threshold - b.threshold);
+                nextRank = sortedRanks.find(r => r.threshold > total);
+            }
+
+            const currentLang = state.lang || 'uk';
+            const randomPhrase = currentLang === 'uk' 
+                ? ukMotivations[Math.floor(Math.random() * ukMotivations.length)]
+                : enMotivations[Math.floor(Math.random() * enMotivations.length)];
+
+            if (nextRank) {
+                const diff = nextRank.threshold - total;
+                const rankName = getTitle(nextRank);
+                const msg = currentLang === 'uk' 
+                    ? `Всього зароблено: ${total} ⭐\nЩе ${diff} до рангу «${rankName}»!\n\n${randomPhrase}`
+                    : `Total earned: ${total} ⭐\n${diff} left to «${rankName}»!\n\n${randomPhrase}`;
+                showToast(msg);
+            } else {
+                const msg = currentLang === 'uk'
+                    ? `Всього зароблено: ${total} ⭐\nТи на максимальному рівні! 😎\n\n${randomPhrase}`
+                    : `Total earned: ${total} ⭐\nYou reached max level! 😎\n\n${randomPhrase}`;
+                showToast(msg);
+            }
+        };
+
+        window.showTaskDesc = function(id) {
+            const task = config.tasks.find(t => t.id === id);
+            if (!task) return;
+            const currentLang = state.lang || 'uk';
+            const t = translations[currentLang] || translations['uk'];
+            
+            const desc = getDesc(task);
+            
+            document.getElementById('desc-modal-icon').innerText = task.icon || '🎯';
+            document.getElementById('desc-modal-title').innerText = getTitle(task);
+            document.getElementById('desc-modal-text').innerText = desc || t.no_desc;
+            
+            const modal = document.getElementById('desc-modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        };
+
         function updateUI() {
-            const t = translations[state.lang];
+            const currentLang = state.lang || 'uk';
+            const t = translations[currentLang] || translations['uk'];
             
-            // Translations bindings
-            document.getElementById('ui-loading-text').innerText = t.syncing;
-            document.getElementById('ui-greeting').innerText = t.greeting;
-            document.getElementById('ui-level-text').innerText = t.level;
-            document.getElementById('nav-label-admin').innerText = t.admin;
-            document.getElementById('ui-day-balance').innerText = t.day_balance;
-            document.getElementById('ui-pin-title').innerHTML = t.parent_access;
-            document.getElementById('ui-admin-title').innerText = t.settings;
-            document.getElementById('ui-admin-back').innerText = t.back;
-            document.getElementById('ui-admin-reset').innerText = t.reset_tasks;
-            document.getElementById('ui-admin-bonus').innerText = t.give_bonus;
-            document.getElementById('ui-admin-change-pin').innerText = t.change_pin;
-            document.getElementById('ui-admin-save-pin').innerText = t.save;
+            setElText('ui-loading-text', t.syncing);
+            setElText('ui-greeting', t.greeting);
+            setElText('ui-level-text', t.level);
+            setElText('nav-label-admin', t.admin);
+            setElText('ui-day-balance', t.day_balance);
+            setElHTML('ui-pin-title', t.parent_access);
+            setElText('ui-admin-title', t.settings);
+            setElText('ui-admin-back', t.back);
+            setElText('ui-admin-reset', t.reset_tasks);
+            setElText('ui-admin-bonus', t.give_bonus);
+            setElText('ui-admin-change-pin', t.change_pin);
+            setElText('ui-admin-save-pin', t.save);
             
-            document.getElementById('ui-admin-new-quest').innerText = t.new_quest;
-            document.getElementById('ui-admin-new-item').innerText = t.new_item;
-            document.getElementById('ui-admin-new-goal').innerText = t.new_goal;
-            document.getElementById('ui-admin-new-rank').innerText = t.new_rank;
+            setElText('ui-admin-new-quest', t.new_quest);
+            setElText('ui-admin-task-req', `❗️ ${t.required}`);
+            setElText('ui-admin-new-item', t.new_item);
+            setElText('ui-admin-new-goal', t.new_goal);
+            setElText('ui-admin-new-rank', t.new_rank);
             
-            document.getElementById('ui-admin-add-task').innerText = editingState.tasks ? t.save : t.add;
-            document.getElementById('ui-admin-add-item').innerText = editingState.shop ? t.save : t.add;
-            document.getElementById('ui-admin-add-goal').innerText = editingState.goals ? t.save : t.add;
-            document.getElementById('ui-admin-add-rank').innerText = editingState.ranks ? t.save : t.add;
+            setElText('ui-admin-add-task', editingState.tasks !== null ? t.save : t.add);
+            setElText('ui-admin-add-item', editingState.shop !== null ? t.save : t.add);
+            setElText('ui-admin-add-goal', editingState.goals !== null ? t.save : t.add);
+            setElText('ui-admin-add-rank', editingState.ranks !== null ? t.save : t.add);
 
-            document.getElementById('audit-calendar-header-title').innerText = t.audit_log;
-            document.getElementById('ui-audit-day-title').innerText = t.audit_day_title;
-            document.getElementById('btn-toggle-cal').innerText = isCalendarOpen ? t.close_calendar : t.open_calendar;
-            document.getElementById('btn-today-main').innerText = t.today;
-            document.getElementById('btn-today-audit').innerText = t.today;
+            setElText('audit-calendar-header-title', t.audit_log);
+            setElText('ui-audit-day-title', t.audit_day_title);
+            setElText('btn-toggle-cal', isCalendarOpen ? t.close_calendar : t.open_calendar);
+            setElText('btn-today-main', t.today);
+            setElText('btn-today-audit', t.today);
             
-            document.getElementById('new-pin-input').placeholder = t.new_pin;
-            document.getElementById('task-title-ua').placeholder = t.name;
-            document.getElementById('shop-title-ua').placeholder = t.name;
-            document.getElementById('goal-title-ua').placeholder = t.name;
-            document.getElementById('rank-title-ua').placeholder = t.name;
+            const filterMap = { 'default': t.filter_default, 'required': t.filter_required, 'incomplete': t.filter_incomplete };
+            setElText('ui-filter-text', filterMap[currentTaskFilter]);
             
-            // Sidebar Tabs
-            document.getElementById('tab-tasks').querySelector('.nav-label').innerText = t.tasks;
-            document.getElementById('tab-shop').querySelector('.nav-label').innerText = t.shop;
-            document.getElementById('tab-goals').querySelector('.nav-label').innerText = t.goals;
-            document.getElementById('tab-calendar').querySelector('.nav-label').innerText = t.calendar;
+            setElPlaceholder('new-pin-input', t.new_pin);
             
-            // Admin Tabs
-            document.getElementById('admin-tab-general').innerText = t.general;
-            document.getElementById('admin-tab-tasks').innerText = t.tasks;
-            document.getElementById('admin-tab-shop').innerText = t.shop;
-            document.getElementById('admin-tab-goals').innerText = t.goals;
-            document.getElementById('admin-tab-audit').innerText = t.audit;
-            document.getElementById('admin-tab-ranks').innerText = t.ranks;
+            ['tasks', 'shop', 'goals', 'calendar'].forEach(tab => {
+                const el = document.getElementById(`tab-${tab}`);
+                if (el) { const label = el.querySelector('.nav-label'); if (label) label.innerText = t[tab] || ''; }
+            });
+            
+            ['general', 'tasks', 'shop', 'goals', 'audit', 'ranks'].forEach(tab => {
+                setElText(`admin-tab-${tab}`, t[tab]);
+            });
 
-            document.getElementById('balance').innerText = state.balance;
+            setElText('balance', state.balance || 0);
             
             updateLevelUI(); 
             renderTasks(); 
@@ -665,6 +761,8 @@
             if(e) e.preventDefault();
             const sidebar = document.getElementById('sidebar');
             const icon = document.getElementById('menu-icon');
+            if(!sidebar || !icon) return;
+            
             isExpanded = !isExpanded;
             if(isExpanded) {
                 sidebar.classList.add('expanded');
@@ -677,13 +775,21 @@
 
         window.switchTab = function(tab) {
             ['tasks', 'shop', 'goals', 'calendar'].forEach(t => {
-                document.getElementById(`section-${t}`).classList.add('hidden');
+                const s = document.getElementById(`section-${t}`);
+                if(s) s.classList.add('hidden');
                 const btn = document.getElementById(`tab-${t}`);
                 if(btn) btn.className = "nav-item bg-white text-slate-400 hover:bg-slate-50";
             });
-            document.getElementById(`section-${tab}`).classList.remove('hidden');
-            const target = document.getElementById(`tab-${tab}`);
-            if(target) target.className = "nav-item bg-blue-600 text-white shadow-md";
+            
+            const targetSection = document.getElementById(`section-${tab}`);
+            if(targetSection) targetSection.classList.remove('hidden');
+            
+            const targetBtn = document.getElementById(`tab-${tab}`);
+            if(targetBtn) targetBtn.className = "nav-item bg-blue-600 text-white shadow-md";
+            
+            const filterBtn = document.getElementById('btn-task-filter');
+            if(filterBtn) filterBtn.style.display = tab === 'tasks' ? 'flex' : 'none';
+            
             if (isExpanded && window.innerWidth < 768) window.toggleSidebar();
             
             if(tab === 'calendar') {
@@ -694,13 +800,19 @@
 
         window.toggleCalendarGrid = function() {
             const grid = document.getElementById('calendar-grid-container');
+            const currentLang = state.lang || 'uk';
+            const t = translations[currentLang] || translations['uk'];
+            if(!grid || !t) return;
+            
             isCalendarOpen = !isCalendarOpen;
+            const btn = document.getElementById('btn-toggle-cal');
+            
             if(isCalendarOpen) {
                 grid.classList.remove('hidden');
-                document.getElementById('btn-toggle-cal').innerText = translations[state.lang].close_calendar;
+                if(btn) btn.innerText = t.close_calendar;
             } else {
                 grid.classList.add('hidden');
-                document.getElementById('btn-toggle-cal').innerText = translations[state.lang].open_calendar;
+                if(btn) btn.innerText = t.open_calendar;
             }
         }
 
@@ -709,54 +821,61 @@
             const task = config.tasks.find(t => t.id === id);
             await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'userState', 'main'), { 
                 balance: state.balance + pts, totalEarned: (state.totalEarned || 0) + pts, completedTasks: [...state.completedTasks, id] 
-            });
+            }).catch(e => console.error(e));
             await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'history'), { 
-                timestamp: Date.now(), type: 'task', title: task.title[state.lang] || task.title.uk, value: pts, icon: task.icon || '🎯', reverted: false, taskId: id 
-            });
+                timestamp: Date.now(), type: 'task', title: getTitle(task), value: pts, icon: task.icon || '🎯', reverted: false, taskId: id 
+            }).catch(e => console.error(e));
             showToast(`+${pts} ⭐`);
         };
 
         window.revertAction = async function(logId, type, value, taskId) {
             if (!user) return;
-            const t = translations[state.lang];
+            const currentLang = state.lang || 'uk';
+            const t = translations[currentLang] || translations['uk'];
             const newBalance = type === 'task' ? state.balance - value : state.balance + value;
             const newTotal = type === 'task' ? (state.totalEarned || 0) - value : state.totalEarned;
-            const newCompleted = taskId ? state.completedTasks.filter(id => id !== taskId) : state.completedTasks;
+            
+            const parsedTaskId = taskId ? parseInt(taskId, 10) : null;
+            const newCompleted = parsedTaskId ? state.completedTasks.filter(id => id !== parsedTaskId) : state.completedTasks;
+            
             await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'userState', 'main'), { 
                 balance: Math.max(0, newBalance), totalEarned: Math.max(0, newTotal), completedTasks: newCompleted
-            });
-            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history', logId), { reverted: true, revertedAt: Date.now() });
+            }).catch(e => console.error(e));
+            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'history', logId), { 
+                reverted: true, revertedAt: Date.now() 
+            }).catch(e => console.error(e));
             showToast(t.toast_cancelled);
         }
 
         window.buyReward = async function(id, cost) {
             if (!user || state.balance < cost) return;
-            const t = translations[state.lang];
+            const currentLang = state.lang || 'uk';
+            const t = translations[currentLang] || translations['uk'];
             const reward = config.shop.find(r => r.id === id);
-            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'userState', 'main'), { balance: state.balance - cost });
-            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'history'), { timestamp: Date.now(), type: 'reward', title: reward.title[state.lang] || reward.title.uk, value: cost, icon: reward.icon || '🎁', reverted: false });
+            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'userState', 'main'), { balance: state.balance - cost }).catch(e => console.error(e));
+            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'history'), { timestamp: Date.now(), type: 'reward', title: getTitle(reward), value: cost, icon: reward.icon || '🎁', reverted: false }).catch(e => console.error(e));
             showToast(t.toast_bought);
         };
 
         window.closePinPad = function(e) {
             if(e) e.preventDefault();
-            document.getElementById('pin-modal').classList.add('hidden');
-            document.getElementById('pin-modal').style.display = 'none';
-            pinB = "";
-            updatePinDots();
+            const modal = document.getElementById('pin-modal');
+            if(modal) { modal.classList.add('hidden'); modal.style.display = 'none'; }
+            pinB = ""; updatePinDots();
         };
 
         window.closeAdminModal = function(e) {
             if(e) { e.preventDefault(); e.stopPropagation(); }
-            document.getElementById('admin-modal').classList.add('hidden');
+            const amodal = document.getElementById('admin-modal');
+            if(amodal) amodal.classList.add('hidden');
             window.closePinPad(); 
         };
 
         window.openPinPad = (e) => { 
             if(e) e.preventDefault();
             pinB = ""; updatePinDots(); 
-            document.getElementById('pin-modal').classList.remove('hidden'); 
-            document.getElementById('pin-modal').style.display = 'flex'; 
+            const modal = document.getElementById('pin-modal');
+            if(modal) { modal.classList.remove('hidden'); modal.style.display = 'flex'; }
         };
 
         window.changeMonth = (d) => { viewDate.setMonth(viewDate.getMonth() + d); renderCalendar(); };
@@ -765,15 +884,73 @@
         window.goToToday = () => { viewDate = new Date(); selectedDateStr = toYMD(new Date()); window.showDayDetails(selectedDateStr); };
         window.goToAuditToday = () => { auditDate = new Date(); auditDateStr = toYMD(new Date()); window.setAuditDay(auditDateStr); };
         
-        window.updatePin = async () => { const t = translations[state.lang]; const v = document.getElementById('new-pin-input').value; if(v.length === 4) { await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'userState', 'main'), { pin: v }); showToast(t.toast_pin_updated); document.getElementById('new-pin-input').value = ""; } };
-        window.addBonus = async (p) => { if (!user) return; const t = translations[state.lang]; const nt = (state.totalEarned||0)+p; await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'userState', 'main'), { balance: state.balance + p, totalEarned: nt }); await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'history'), { timestamp: Date.now(), type: 'task', title: t.toast_bonus, value: p, icon: '🎁', reverted: false }); showToast(t.toast_bonus); };
-        window.confirmAction = async (a) => { if (a === 'resetTasks') { const t = translations[state.lang]; await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'userState', 'main'), { completedTasks: [] }); showToast(t.toast_reset); } };
+        window.cycleTaskFilter = function() {
+            if (currentTaskFilter === 'default') currentTaskFilter = 'required';
+            else if (currentTaskFilter === 'required') currentTaskFilter = 'incomplete';
+            else currentTaskFilter = 'default';
+            updateUI();
+        };
+
+        window.moveItem = async function(type, index, direction) {
+            if (!config[type]) return;
+            const arr = config[type];
+            if (index + direction < 0 || index + direction >= arr.length) return;
+            
+            const temp = arr[index];
+            arr[index] = arr[index + direction];
+            arr[index + direction] = temp;
+            
+            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'main'), config).catch(e => console.error(e));
+            renderAdminLists();
+            updateUI();
+        };
+
+        window.updatePin = async () => { 
+            const currentLang = state.lang || 'uk';
+            const t = translations[currentLang] || translations['uk'];
+            const vInput = document.getElementById('new-pin-input');
+            const v = vInput ? vInput.value : ''; 
+            if(v.length === 4) { 
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'userState', 'main'), { pin: v }).catch(e => console.error(e)); 
+                showToast(t.toast_pin_updated); 
+                if(vInput) vInput.value = ""; 
+            } 
+        };
+        
+        window.addBonus = async (p) => { 
+            if (!user) return; 
+            const currentLang = state.lang || 'uk';
+            const t = translations[currentLang] || translations['uk'];
+            const nt = (state.totalEarned||0)+p; 
+            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'userState', 'main'), { balance: state.balance + p, totalEarned: nt }).catch(e => console.error(e)); 
+            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'history'), { timestamp: Date.now(), type: 'task', title: t.toast_bonus, value: p, icon: '🎁', reverted: false }).catch(e => console.error(e)); 
+            showToast(t.toast_bonus); 
+        };
+        
+        window.confirmAction = async (a) => { 
+            if (a === 'resetTasks') { 
+                const currentLang = state.lang || 'uk';
+                const t = translations[currentLang] || translations['uk'];
+                await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'userState', 'main'), { 
+                    completedTasks: [], lastResetDate: toYMD(new Date())
+                }).catch(e => console.error(e)); 
+                showToast(t.toast_reset); 
+            } 
+        };
         
         window.switchAdminTab = function(tabName) {
             document.querySelectorAll('.admin-tab-btn').forEach(b => b.classList.remove('active'));
-            const btn = document.getElementById(`admin-tab-${tabName}`); if(btn) btn.classList.add('active');
-            ['general', 'tasks', 'shop', 'goals', 'audit', 'ranks'].forEach(x => { const el = document.getElementById(`admin-content-${x}`); if(el) el.classList.add('hidden'); });
-            const content = document.getElementById(`admin-content-${tabName}`); if(content) content.classList.remove('hidden');
+            const btn = document.getElementById(`admin-tab-${tabName}`); 
+            if(btn) btn.classList.add('active');
+            
+            ['general', 'tasks', 'shop', 'goals', 'audit', 'ranks'].forEach(x => { 
+                const el = document.getElementById(`admin-content-${x}`); 
+                if(el) el.classList.add('hidden'); 
+            });
+            
+            const content = document.getElementById(`admin-content-${tabName}`); 
+            if(content) content.classList.remove('hidden');
+            
             if(tabName==='audit') { renderAuditCalendar(); renderAuditHistory(); }
             renderAdminLists();
         };
@@ -783,84 +960,172 @@
             if (!item) return;
             editingState[type] = id;
             
-            const t = translations[state.lang];
+            const currentLang = state.lang || 'uk';
+            const t = translations[currentLang] || translations['uk'];
+            
             if (type === 'ranks') {
-                document.getElementById('rank-title-ua').value = item.title.uk;
-                document.getElementById('rank-threshold').value = item.threshold;
-                document.getElementById('ui-admin-add-rank').innerText = t.save;
+                const titleElUa = document.getElementById('rank-title-ua');
+                const titleElEn = document.getElementById('rank-title-en');
+                const thresholdEl = document.getElementById('rank-threshold');
+                
+                if(titleElUa) titleElUa.value = item.title?.uk || item.title || '';
+                if(titleElEn) titleElEn.value = item.title?.en || item.title?.uk || item.title || '';
+                if(thresholdEl) thresholdEl.value = item.threshold;
+                
+                const addBtn = document.getElementById('ui-admin-add-rank');
+                if(addBtn) addBtn.innerText = t.save;
             } else {
                 const pfx = type === 'shop' ? 'shop' : type.slice(0, -1);
-                document.getElementById(`${pfx}-title-ua`).value = item.title.uk;
-                document.getElementById(`${pfx}-${type === 'tasks' ? 'points' : 'cost'}`).value = item.points || item.cost;
-                document.getElementById(`${pfx}-icon`).value = item.icon || '✨';
+                const titleElUa = document.getElementById(`${pfx}-title-ua`);
+                const titleElEn = document.getElementById(`${pfx}-title-en`);
+                const valEl = document.getElementById(`${pfx}-${type === 'tasks' ? 'points' : 'cost'}`);
+                const iconEl = document.getElementById(`${pfx}-icon`);
+                
+                if(titleElUa) titleElUa.value = item.title?.uk || item.title || '';
+                if(titleElEn) titleElEn.value = item.title?.en || item.title?.uk || item.title || '';
+                if(valEl) valEl.value = item.points || item.cost;
+                if(iconEl) iconEl.value = item.icon || '✨';
+                
+                if (type === 'tasks') {
+                    const reqEl = document.getElementById('task-required');
+                    if (reqEl) reqEl.checked = !!item.isRequired;
+                    
+                    const descElUa = document.getElementById('task-desc-ua');
+                    const descElEn = document.getElementById('task-desc-en');
+                    if (descElUa) descElUa.value = item.desc ? (item.desc.uk || '') : '';
+                    if (descElEn) descElEn.value = item.desc ? (item.desc.en || '') : '';
+                }
+                
                 const btnId = type === 'tasks' ? 'ui-admin-add-task' : (type === 'shop' ? 'ui-admin-add-item' : 'ui-admin-add-goal');
-                document.getElementById(btnId).innerText = t.save;
+                const addBtn = document.getElementById(btnId);
+                if(addBtn) addBtn.innerText = t.save;
             }
         };
 
         window.addItem = async (type) => { 
-            const t = translations[state.lang];
+            const currentLang = state.lang || 'uk';
+            const t = translations[currentLang] || translations['uk'];
             
             if (type === 'ranks') {
-                const titleInput = document.getElementById('rank-title-ua').value;
-                const val = parseInt(document.getElementById('rank-threshold').value);
-                if (!titleInput || isNaN(val)) return showToast(t.toast_fill_fields);
+                const titleInputUaEl = document.getElementById('rank-title-ua');
+                const titleInputEnEl = document.getElementById('rank-title-en');
+                const valInputEl = document.getElementById('rank-threshold');
+                
+                const titleInputUa = titleInputUaEl ? titleInputUaEl.value : '';
+                const titleInputEn = titleInputEnEl ? titleInputEnEl.value : titleInputUa;
+                const val = valInputEl ? parseInt(valInputEl.value) : NaN;
+                
+                if (!titleInputUa || isNaN(val)) return showToast(t.toast_fill_fields);
                 
                 if (editingState.ranks !== null) {
                     const idx = config.ranks.findIndex(r => (r.id || r.threshold) === editingState.ranks);
-                    if (idx > -1) { config.ranks[idx].title = { uk: titleInput, en: titleInput }; config.ranks[idx].threshold = val; }
+                    if (idx > -1) { 
+                        config.ranks[idx].title = { uk: titleInputUa, en: titleInputEn }; 
+                        config.ranks[idx].threshold = val; 
+                    }
                     editingState.ranks = null;
-                    document.getElementById('ui-admin-add-rank').innerText = t.add;
+                    const addBtn = document.getElementById('ui-admin-add-rank');
+                    if(addBtn) addBtn.innerText = t.add;
                     showToast(t.toast_updated);
                 } else {
                     if (!config.ranks) config.ranks = [];
-                    config.ranks.push({ id: Date.now(), threshold: val, title: { uk: titleInput, en: titleInput } });
+                    config.ranks.push({ id: Date.now(), threshold: val, title: { uk: titleInputUa, en: titleInputEn } });
                     showToast(t.toast_added);
                 }
                 config.ranks.sort((a,b)=>a.threshold-b.threshold);
-                document.getElementById('rank-title-ua').value = ""; document.getElementById('rank-threshold').value = "";
+                if(titleInputUaEl) titleInputUaEl.value = ""; 
+                if(titleInputEnEl) titleInputEnEl.value = ""; 
+                if(valInputEl) valInputEl.value = "";
             } else {
                 const pfx = (type === 'shop') ? 'shop' : type.slice(0, -1); 
-                const titleInput = document.getElementById(`${pfx}-title-ua`).value; 
-                const val = parseInt(document.getElementById(`${pfx}-${type === 'tasks' ? 'points' : 'cost'}`).value); 
-                const icon = document.getElementById(`${pfx}-icon`).value;
-                if (!titleInput || isNaN(val)) return showToast(t.toast_fill_fields); 
+                const titleInputUaEl = document.getElementById(`${pfx}-title-ua`);
+                const titleInputEnEl = document.getElementById(`${pfx}-title-en`);
+                const valInputEl = document.getElementById(`${pfx}-${type === 'tasks' ? 'points' : 'cost'}`);
+                const iconInputEl = document.getElementById(`${pfx}-icon`);
+                
+                const titleInputUa = titleInputUaEl ? titleInputUaEl.value : ''; 
+                const titleInputEn = titleInputEnEl ? titleInputEnEl.value : titleInputUa; 
+                const val = valInputEl ? parseInt(valInputEl.value) : NaN; 
+                const icon = (iconInputEl ? iconInputEl.value : '') || '✨';
+                
+                let isReq = false;
+                let descUa = '';
+                let descEn = '';
+                if (type === 'tasks') {
+                    const reqEl = document.getElementById('task-required');
+                    if (reqEl) isReq = reqEl.checked;
+                    
+                    const descElUa = document.getElementById('task-desc-ua');
+                    const descElEn = document.getElementById('task-desc-en');
+                    descUa = descElUa ? descElUa.value : '';
+                    descEn = descElEn ? descElEn.value : descUa;
+                }
+                
+                if (!titleInputUa || isNaN(val)) return showToast(t.toast_fill_fields); 
                 
                 if (editingState[type] !== null) {
                     const idx = config[type].findIndex(i => i.id === editingState[type]);
                     if (idx > -1) {
-                        config[type][idx].title.uk = titleInput; config[type][idx].title.en = titleInput;
-                        config[type][idx].icon = icon || '✨';
-                        if (type === 'tasks') config[type][idx].points = val; else config[type][idx].cost = val;
+                        config[type][idx].title = { uk: titleInputUa, en: titleInputEn };
+                        config[type][idx].icon = icon;
+                        if (type === 'tasks') {
+                            config[type][idx].points = val;
+                            config[type][idx].isRequired = isReq;
+                            config[type][idx].desc = { uk: descUa, en: descEn };
+                        } else config[type][idx].cost = val;
                     }
                     editingState[type] = null;
                     const btnId = type === 'tasks' ? 'ui-admin-add-task' : (type === 'shop' ? 'ui-admin-add-item' : 'ui-admin-add-goal');
-                    document.getElementById(btnId).innerText = t.add;
+                    const addBtn = document.getElementById(btnId);
+                    if(addBtn) addBtn.innerText = t.add;
                     showToast(t.toast_updated);
                 } else {
                     if (!config[type]) config[type] = [];
-                    config[type].push({ id: Date.now(), title: { uk: titleInput, en: titleInput }, icon: icon || '✨', [type === 'tasks' ? 'points' : 'cost']: val }); 
+                    const newItem = { id: Date.now(), title: { uk: titleInputUa, en: titleInputEn }, icon: icon, [type === 'tasks' ? 'points' : 'cost']: val };
+                    if (type === 'tasks') {
+                        newItem.isRequired = isReq;
+                        newItem.desc = { uk: descUa, en: descEn };
+                    }
+                    config[type].push(newItem); 
                     showToast(t.toast_added);
                 }
-                document.getElementById(`${pfx}-title-ua`).value = ""; document.getElementById(`${pfx}-${type === 'tasks' ? 'points' : 'cost'}`).value = ""; document.getElementById(`${pfx}-icon`).value = "";
+                
+                if(titleInputUaEl) titleInputUaEl.value = ""; 
+                if(titleInputEnEl) titleInputEnEl.value = ""; 
+                if(valInputEl) valInputEl.value = ""; 
+                if(iconInputEl) iconInputEl.value = "";
+                if(type === 'tasks') {
+                    const reqEl = document.getElementById('task-required');
+                    if (reqEl) reqEl.checked = false;
+                    const descElUa = document.getElementById('task-desc-ua');
+                    const descElEn = document.getElementById('task-desc-en');
+                    if (descElUa) descElUa.value = "";
+                    if (descElEn) descElEn.value = "";
+                }
             }
-            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'main'), config); 
+            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'main'), config).catch(e => console.error(e)); 
             renderAdminLists(); 
         };
 
-        window.handleDelete = async (type, id) => { config[type] = config[type].filter(i => (i.id || i.threshold) !== id); await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'main'), config); renderAdminLists(); };
+        window.handleDelete = async (type, id) => { 
+            config[type] = config[type].filter(i => (i.id || i.threshold) !== id); 
+            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'main'), config).catch(e => console.error(e)); 
+            renderAdminLists(); 
+        };
 
         window.enterDigit = (d, e) => { 
-            const t = translations[state.lang];
+            const currentLang = state.lang || 'uk';
+            const t = translations[currentLang] || translations['uk'];
             if(e) e.preventDefault();
             if (d === 'C') { pinB = ""; updatePinDots(); return; }
             pinB += d; updatePinDots(); 
             if (pinB.length === 4) { 
                 if (pinB === state.pin) { 
                     pinB = ""; 
-                    document.getElementById('pin-modal').classList.add('hidden'); 
-                    document.getElementById('pin-modal').style.display = 'none';
-                    document.getElementById('admin-modal').classList.remove('hidden'); 
+                    const modal = document.getElementById('pin-modal');
+                    if(modal) { modal.classList.add('hidden'); modal.style.display = 'none'; }
+                    const amodal = document.getElementById('admin-modal');
+                    if(amodal) amodal.classList.remove('hidden'); 
                     window.switchAdminTab('general'); 
                 } else { 
                     pinB = ""; updatePinDots(true); showToast(t.toast_wrong_pin); 
@@ -869,11 +1134,21 @@
         };
 
         window.showDayDetails = (ds) => { 
-            const t = translations[state.lang];
-            selectedDateStr = ds; renderCalendar(); const logs = historyLogs.filter(l => toYMD(l.timestamp) === ds).sort((a,b) => b.timestamp - a.timestamp); 
-            const dEl = document.getElementById('details-date'); if(dEl) dEl.innerText = new Date(ds + 'T00:00:00').toLocaleDateString(state.lang==='uk'?'uk-UA':'en-US', {day:'numeric', month:'long'});
-            const bEl = document.getElementById('day-end-balance'); if(bEl) bEl.innerText = historyLogs.filter(l => l.timestamp <= new Date(ds + 'T23:59:59').getTime()).reduce((acc,l)=> l.reverted ? acc : (l.type==='task' ? acc+l.value : acc-l.value), 0);
-            const lEl = document.getElementById('details-logs'); if(!lEl) return;
+            const currentLang = state.lang || 'uk';
+            const t = translations[currentLang] || translations['uk'];
+            selectedDateStr = ds; 
+            renderCalendar(); 
+            const logs = historyLogs.filter(l => toYMD(l.timestamp) === ds).sort((a,b) => b.timestamp - a.timestamp); 
+            
+            const dEl = document.getElementById('details-date'); 
+            if(dEl) dEl.innerText = new Date(ds + 'T00:00:00').toLocaleDateString(currentLang==='uk'?'uk-UA':'en-US', {day:'numeric', month:'long'});
+            
+            const bEl = document.getElementById('day-end-balance'); 
+            if(bEl) bEl.innerText = historyLogs.filter(l => l.timestamp <= new Date(ds + 'T23:59:59').getTime()).reduce((acc,l)=> l.reverted ? acc : (l.type==='task' ? acc+l.value : acc-l.value), 0);
+            
+            const lEl = document.getElementById('details-logs'); 
+            if(!lEl) return;
+            
             if(logs.length===0) lEl.innerHTML = `<p class='text-sm text-slate-400 italic py-6 text-center font-bold font-black uppercase'>${t.no_activity}</p>`;
             else lEl.innerHTML = logs.map(l => {
                 if (l.reverted) {
@@ -881,32 +1156,71 @@
                 }
                 return `<div class='flex justify-between items-center bg-white p-4 rounded-xl shadow-sm text-xs text-slate-800 border border-slate-50'><div class='flex gap-3 items-center'><span class='text-2xl'>${l.icon||'🎯'}</span><span class='font-black'>${l.title}</span></div><span class='font-black ${l.type==='task'?'text-green-500':'text-orange-500'}'>${l.type==='task'?'+':'-'}${l.value} ⭐</span></div>`;
             }).join('');
-            document.getElementById('day-details').classList.remove('hidden'); 
+            
+            const detailsContainer = document.getElementById('day-details');
+            if(detailsContainer) detailsContainer.classList.remove('hidden'); 
         };
 
         window.toggleLang = async () => {
-            const nextLang = state.lang === 'uk' ? 'en' : 'uk';
-            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'userState', 'main'), { lang: nextLang });
+            const currentLang = state.lang || 'uk';
+            const nextLang = currentLang === 'uk' ? 'en' : 'uk';
+            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'userState', 'main'), { lang: nextLang }).catch(e => console.error(e));
         };
+
+        // --- BACKGROUND DAILY RESET CHECKER ---
+        const checkDailyReset = async () => {
+            if (!user) return;
+            const today = toYMD(new Date());
+            if (state.lastResetDate && state.lastResetDate !== today) {
+                try {
+                    await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'userState', 'main'), {
+                        completedTasks: [],
+                        lastResetDate: today
+                    });
+                } catch (e) { console.error("Auto-reset failed", e); }
+            }
+        };
+
+        setInterval(checkDailyReset, 60000);
 
         // --- DATABASE LISTENERS ---
 
         const setupListeners = () => {
             onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'userState', 'main'), (snap) => {
-                if (snap.exists()) state = snap.data();
-                else setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'userState', 'main'), state);
-                updateUI(); document.getElementById('loading').style.display = 'none';
-            });
+                if (snap.exists()) {
+                    const dbState = snap.data();
+                    state = { balance: 0, totalEarned: 0, completedTasks: [], lang: 'uk', pin: '0000', lastResetDate: '', ...dbState };
+                    
+                    const today = toYMD(new Date());
+                    if (state.lastResetDate !== today) {
+                        state.completedTasks = [];
+                        state.lastResetDate = today;
+                        updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'userState', 'main'), {
+                            completedTasks: [],
+                            lastResetDate: today
+                        }).catch(e => console.error(e));
+                    }
+                } else {
+                    state.lastResetDate = toYMD(new Date());
+                    setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'userState', 'main'), state).catch(e => console.error(e));
+                }
+                updateUI(); 
+                const loader = document.getElementById('loading');
+                if(loader) loader.style.display = 'none';
+            }, (error) => console.error(error));
+            
             onSnapshot(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'main'), (snap) => {
-                if (snap.exists()) config = snap.data();
-                else {
+                if (snap.exists()) {
+                    const dbConfig = snap.data();
+                    config = { tasks: [], shop: [], goals: [], ranks: [], ...dbConfig };
+                } else {
                     const def = {
                         tasks: [
-                            {id:1, title:{uk:"Чищення зубів 🦷", en:"Teeth 🦷"}, points:10, icon:"✨"},
-                            {id:2, title:{uk:"Застелити ліжко 🛌", en:"Bed 🛌"}, points:10, icon:"🏡"},
-                            {id:3, title:{uk:"Домашня робота ✍️", en:"Homework ✍️"}, points:40, icon:"🎓"},
-                            {id:4, title:{uk:"Читання книги 📖", en:"Reading 📖"}, points:30, icon:"📚"},
-                            {id:5, title:{uk:"Прибрати іграшки 🧸", en:"Clean Toys 🧸"}, points:20, icon:"🏠"}
+                            {id:1, title:{uk:"Чищення зубів 🦷", en:"Teeth 🦷"}, desc:{uk:"Ретельно почисть зуби протягом 2 хвилин.", en:"Brush your teeth carefully for 2 minutes."}, points:10, icon:"✨", isRequired:false},
+                            {id:2, title:{uk:"Застелити ліжко 🛌", en:"Bed 🛌"}, desc:{uk:"Охайно застели своє ліжко після сну.", en:"Make your bed neatly after waking up."}, points:10, icon:"🏡", isRequired:false},
+                            {id:3, title:{uk:"Домашня робота ✍️", en:"Homework ✍️"}, desc:{uk:"Виконай всі задані уроки.", en:"Complete all assigned homework."}, points:40, icon:"🎓", isRequired:true},
+                            {id:4, title:{uk:"Читання книги 📖", en:"Reading 📖"}, desc:{uk:"Почитай книгу мінімум 15 хвилин.", en:"Read a book for at least 15 minutes."}, points:30, icon:"📚", isRequired:false},
+                            {id:5, title:{uk:"Прибрати іграшки 🧸", en:"Clean Toys 🧸"}, desc:{uk:"Склади всі іграшки на свої місця.", en:"Put all toys back in their places."}, points:20, icon:"🏠", isRequired:false}
                         ],
                         shop: [{id:101, title:{uk:"iPad 30 хв", en:"iPad 30m"}, cost:50, icon:"🎮"}],
                         goals: [{id:501, title:{uk:"LEGO", en:"LEGO"}, cost:2000, icon:"🧱"}],
@@ -916,16 +1230,19 @@
                             {id:1003, threshold:1500, title:{uk:"Герой", en:"Hero"}}
                         ]
                     };
-                    setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'main'), def);
+                    setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'config', 'main'), def).catch(e => console.error(e));
                 }
                 updateUI();
-            });
+            }, (error) => console.error(error));
+            
             onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'history'), (snap) => {
                 historyLogs = snap.docs.map(doc => ({id: doc.id, ...doc.data()}));
                 if(selectedDateStr) window.showDayDetails(selectedDateStr);
                 renderCalendar(); 
-                if(document.getElementById('admin-tab-audit').classList.contains('active')) renderAuditHistory();
-            });
+                
+                const auditTab = document.getElementById('admin-tab-audit');
+                if(auditTab && auditTab.classList.contains('active')) renderAuditHistory();
+            }, (error) => console.error(error));
         };
 
         function start() {
@@ -946,6 +1263,7 @@
                 onAuthStateChanged(auth, (u) => { user = u; if(u) setupListeners(); });
             }).catch(e => console.error(e));
         }
+        
         
         start();
     </script>
