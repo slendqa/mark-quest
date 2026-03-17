@@ -968,8 +968,8 @@
                 const titleElEn = document.getElementById('rank-title-en');
                 const thresholdEl = document.getElementById('rank-threshold');
                 
-                if(titleElUa) titleElUa.value = item.title?.uk || item.title || '';
-                if(titleElEn) titleElEn.value = item.title?.en || item.title?.uk || item.title || '';
+                if(titleElUa) titleElUa.value = item.title.uk || item.title || '';
+                if(titleElEn) titleElEn.value = item.title.en || item.title || '';
                 if(thresholdEl) thresholdEl.value = item.threshold;
                 
                 const addBtn = document.getElementById('ui-admin-add-rank');
@@ -981,7 +981,7 @@
                 const valEl = document.getElementById(`${pfx}-${type === 'tasks' ? 'points' : 'cost'}`);
                 const iconEl = document.getElementById(`${pfx}-icon`);
                 
-                if(titleElUa) titleElUa.value = item.title?.uk || item.title || '';
+                if(titleElUa) titleElUa.value = getTitle(item);
                 if(titleElEn) titleElEn.value = item.title?.en || item.title?.uk || item.title || '';
                 if(valEl) valEl.value = item.points || item.cost;
                 if(iconEl) iconEl.value = item.icon || '✨';
@@ -1263,7 +1263,6 @@
                 onAuthStateChanged(auth, (u) => { user = u; if(u) setupListeners(); });
             }).catch(e => console.error(e));
         }
-        
         
         start();
     </script>
