@@ -247,7 +247,7 @@
                             <input type="text" id="task-title-ua" placeholder="Назва (UA)" class="w-full p-2 rounded-lg font-bold text-slate-800">
                             <input type="text" id="task-title-en" placeholder="Title (EN)" class="w-full p-2 rounded-lg font-bold text-slate-800">
                             
-                            <!-- Нові поля для описів -->
+                            <!-- Поля для описів -->
                             <textarea id="task-desc-ua" placeholder="Опис (UA)" class="w-full p-2 rounded-lg font-bold text-slate-800 text-xs" rows="2"></textarea>
                             <textarea id="task-desc-en" placeholder="Description (EN)" class="w-full p-2 rounded-lg font-bold text-slate-800 text-xs" rows="2"></textarea>
                             
@@ -343,10 +343,11 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, collection, onSnapshot, updateDoc, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const firebaseConfig = {
+        // Firebase Configuration (Canvas injects this automatically)
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
             apiKey: "AIzaSyDXefvcIw-hwiDIJy16870aqUYII0KN6q0",
             authDomain: "markquestss.firebaseapp.com",
             projectId: "markquestss",
@@ -358,7 +359,7 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const appId = 'mark-quest-ss-clean';
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'mark-quest-ss-clean';
 
         let state = { balance: 0, totalEarned: 0, completedTasks: [], lang: 'uk', pin: '0000', lastResetDate: '' };
         let config = { tasks: [], shop: [], goals: [], ranks: [] };
@@ -372,8 +373,9 @@
         let isExpanded = false;
         let isCalendarOpen = false;
         let editingState = { tasks: null, shop: null, goals: null, ranks: null };
-        let currentTaskFilter = 'default'; // 'default', 'required', 'incomplete'
+        let currentTaskFilter = 'default'; 
 
+        // Safe DOM Setters
         const setElText = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
         const setElHTML = (id, val) => { const el = document.getElementById(id); if (el) el.innerHTML = val; };
         const setElPlaceholder = (id, val) => { const el = document.getElementById(id); if (el) el.placeholder = val; };
@@ -582,9 +584,10 @@
             if(!b) return;
             const currentLang = state.lang || 'uk';
             const t = translations[currentLang] || translations['uk'];
-            const y = viewDate.getFullYear(), m = viewDate.getMonth(); 
+            
             setElText('calendar-month-year', viewDate.toLocaleDateString(currentLang==='uk'?'uk-UA':'en-US', {month:'long', year:'numeric'}));
             
+            const y = viewDate.getFullYear(), m = viewDate.getMonth(); 
             const fd = new Date(y, m, 1).getDay(); const dim = new Date(y, m+1, 0).getDate(); const off = fd === 0 ? 6 : fd - 1;
             const totalTasksAvailable = config.tasks ? config.tasks.length : 0;
             let monthTotal = 0;
@@ -671,9 +674,9 @@
             
             const desc = getDesc(task);
             
-            document.getElementById('desc-modal-icon').innerText = task.icon || '🎯';
-            document.getElementById('desc-modal-title').innerText = getTitle(task);
-            document.getElementById('desc-modal-text').innerText = desc || t.no_desc;
+            setElText('desc-modal-icon', task.icon || '🎯');
+            setElText('desc-modal-title', getTitle(task));
+            setElText('desc-modal-text', desc || t.no_desc);
             
             const modal = document.getElementById('desc-modal');
             if (modal) {
@@ -720,6 +723,10 @@
             setElText('ui-filter-text', filterMap[currentTaskFilter]);
             
             setElPlaceholder('new-pin-input', t.new_pin);
+            setElPlaceholder('task-title-ua', t.name);
+            setElPlaceholder('shop-title-ua', t.name);
+            setElPlaceholder('goal-title-ua', t.name);
+            setElPlaceholder('rank-title-ua', t.name);
             
             ['tasks', 'shop', 'goals', 'calendar'].forEach(tab => {
                 const el = document.getElementById(`tab-${tab}`);
@@ -951,7 +958,13 @@
             const content = document.getElementById(`admin-content-${tabName}`); 
             if(content) content.classList.remove('hidden');
             
-            if(tabName==='audit') { renderAuditCalendar(); renderAuditHistory(); }
+            if(tabName==='audit') { 
+                const auditTab = document.getElementById('admin-tab-audit');
+                if (auditTab && auditTab.classList && auditTab.classList.contains('active')) {
+                    renderAuditCalendar(); 
+                    renderAuditHistory(); 
+                }
+            }
             renderAdminLists();
         };
 
@@ -968,8 +981,8 @@
                 const titleElEn = document.getElementById('rank-title-en');
                 const thresholdEl = document.getElementById('rank-threshold');
                 
-                if(titleElUa) titleElUa.value = item.title.uk || item.title || '';
-                if(titleElEn) titleElEn.value = item.title.en || item.title || '';
+                if(titleElUa) titleElUa.value = item.title?.uk || item.title || '';
+                if(titleElEn) titleElEn.value = item.title?.en || item.title?.uk || item.title || '';
                 if(thresholdEl) thresholdEl.value = item.threshold;
                 
                 const addBtn = document.getElementById('ui-admin-add-rank');
@@ -981,7 +994,7 @@
                 const valEl = document.getElementById(`${pfx}-${type === 'tasks' ? 'points' : 'cost'}`);
                 const iconEl = document.getElementById(`${pfx}-icon`);
                 
-                if(titleElUa) titleElUa.value = getTitle(item);
+                if(titleElUa) titleElUa.value = item.title?.uk || item.title || '';
                 if(titleElEn) titleElEn.value = item.title?.en || item.title?.uk || item.title || '';
                 if(valEl) valEl.value = item.points || item.cost;
                 if(iconEl) iconEl.value = item.icon || '✨';
@@ -1216,14 +1229,23 @@
                 } else {
                     const def = {
                         tasks: [
-                            {id:1, title:{uk:"Чищення зубів 🦷", en:"Teeth 🦷"}, desc:{uk:"Ретельно почисть зуби протягом 2 хвилин.", en:"Brush your teeth carefully for 2 minutes."}, points:10, icon:"✨", isRequired:false},
-                            {id:2, title:{uk:"Застелити ліжко 🛌", en:"Bed 🛌"}, desc:{uk:"Охайно застели своє ліжко після сну.", en:"Make your bed neatly after waking up."}, points:10, icon:"🏡", isRequired:false},
-                            {id:3, title:{uk:"Домашня робота ✍️", en:"Homework ✍️"}, desc:{uk:"Виконай всі задані уроки.", en:"Complete all assigned homework."}, points:40, icon:"🎓", isRequired:true},
-                            {id:4, title:{uk:"Читання книги 📖", en:"Reading 📖"}, desc:{uk:"Почитай книгу мінімум 15 хвилин.", en:"Read a book for at least 15 minutes."}, points:30, icon:"📚", isRequired:false},
-                            {id:5, title:{uk:"Прибрати іграшки 🧸", en:"Clean Toys 🧸"}, desc:{uk:"Склади всі іграшки на свої місця.", en:"Put all toys back in their places."}, points:20, icon:"🏠", isRequired:false}
+                            {id:1, title:{uk:"Чищення зубів 🦷", en:"Teeth 🦷"}, desc:{uk:"Ретельно почисть зуби.", en:"Brush carefully."}, points:20, icon:"✨", isRequired:true},
+                            {id:2, title:{uk:"Застелити ліжко 🛌", en:"Bed 🛌"}, desc:{uk:"Охайно застели ліжко.", en:"Make your bed."}, points:20, icon:"🏡", isRequired:true},
+                            {id:3, title:{uk:"Домашня робота ✍️", en:"Homework ✍️"}, desc:{uk:"Виконай всі уроки.", en:"Do all homework."}, points:50, icon:"🎓", isRequired:true},
+                            {id:4, title:{uk:"Читання книги 📖", en:"Reading 📖"}, desc:{uk:"Мінімум 20 хв.", en:"Read for 20 mins."}, points:30, icon:"📚", isRequired:true},
+                            {id:5, title:{uk:"Прибрати кімнату 🧸", en:"Clean Room 🧸"}, desc:{uk:"Склади всі речі.", en:"Tidy up."}, points:30, icon:"🏠", isRequired:true},
+                            {id:6, title:{uk:"Допомога по дому 🍽️", en:"Help 🍽️"}, desc:{uk:"Допоможи з посудом.", en:"Help with dishes."}, points:30, icon:"🧼", isRequired:true},
+                            {id:7, title:{uk:"Додаткове читання 📚", en:"Extra Read 📚"}, desc:{uk:"Ще 20 хв читання.", en:"Extra 20 mins."}, points:20, icon:"📖", isRequired:false},
+                            {id:8, title:{uk:"Тренування 💪", en:"Workout 💪"}, desc:{uk:"Фізичні вправи.", en:"Do exercises."}, points:20, icon:"🏃‍♂️", isRequired:false},
+                            {id:9, title:{uk:"Творчість 🎨", en:"Creativity 🎨"}, desc:{uk:"Малювання або ліпка.", en:"Draw or craft."}, points:30, icon:"🖍️", isRequired:false}
                         ],
-                        shop: [{id:101, title:{uk:"iPad 30 хв", en:"iPad 30m"}, cost:50, icon:"🎮"}],
-                        goals: [{id:501, title:{uk:"LEGO", en:"LEGO"}, cost:2000, icon:"🧱"}],
+                        shop: [
+                            {id:101, title:{uk:"iPad 30 хв", en:"iPad 30m"}, cost:400, icon:"🎮"},
+                            {id:102, title:{uk:"$1 Кишенькові", en:"$1 Pocket"}, cost:400, icon:"💵"},
+                            {id:103, title:{uk:"$2 Кишенькові", en:"$2 Pocket"}, cost:800, icon:"💵"},
+                            {id:104, title:{uk:"$5 Кишенькові", en:"$5 Pocket"}, cost:2000, icon:"💵"}
+                        ],
+                        goals: [{id:501, title:{uk:"LEGO", en:"LEGO"}, cost:7500, icon:"🧱"}],
                         ranks: [
                             {id:1001, threshold:0, title:{uk:"Новачок", en:"Novice"}}, 
                             {id:1002, threshold:500, title:{uk:"Учень", en:"Apprentice"}}, 
@@ -1241,7 +1263,7 @@
                 renderCalendar(); 
                 
                 const auditTab = document.getElementById('admin-tab-audit');
-                if(auditTab && auditTab.classList.contains('active')) renderAuditHistory();
+                if(auditTab && auditTab.classList && auditTab.classList.contains('active')) renderAuditHistory();
             }, (error) => console.error(error));
         };
 
@@ -1260,6 +1282,9 @@
             });
 
             signInAnonymously(auth).then(() => {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    signInWithCustomToken(auth, __initial_auth_token).catch(e => console.error(e));
+                }
                 onAuthStateChanged(auth, (u) => { user = u; if(u) setupListeners(); });
             }).catch(e => console.error(e));
         }
