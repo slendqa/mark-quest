@@ -114,10 +114,19 @@
                         </div>
                         <div class="flex flex-wrap justify-center sm:justify-end items-center gap-3">
                             <div class="flex gap-2">
+                                <!-- Weather Button -->
+                                <button onclick="window.showWeatherModal()" id="btn-weather" class="bg-blue-50 px-3 py-1.5 rounded-lg text-[10px] md:text-xs font-black text-blue-600 border border-blue-200 hover:bg-blue-100 transition-colors shadow-sm flex items-center justify-center gap-1.5 min-w-[70px]">
+                                    <span id="ui-weather-icon" class="text-sm">⏳</span>
+                                    <span id="ui-weather-temp">...</span>
+                                </button>
+                                
+                                <!-- Column Toggle Button -->
                                 <button onclick="window.toggleColumns()" id="btn-col-toggle" class="bg-blue-50 px-3 py-1.5 rounded-lg text-blue-600 border border-blue-200 hover:bg-blue-100 transition-colors shadow-sm flex items-center justify-center" title="Перемкнути вигляд">
                                     <svg id="icon-2col" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="18" rx="1"></rect><rect x="14" y="3" width="7" height="18" rx="1"></rect></svg>
                                     <svg id="icon-1col" class="hidden" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"></rect></svg>
                                 </button>
+                                
+                                <!-- Filter Button -->
                                 <button onclick="window.cycleTaskFilter()" id="btn-task-filter" class="bg-blue-50 px-3 py-1.5 rounded-lg text-[9px] font-black text-blue-600 border border-blue-200 uppercase hover:bg-blue-100 transition-colors shadow-sm flex items-center gap-1.5">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
                                     <span id="ui-filter-text">Дефолт</span>
@@ -235,6 +244,19 @@
             <div class="mt-8">
                 <button id="stats-modal-btn" class="w-full bg-blue-600 text-white py-4 rounded-xl font-black uppercase text-sm hover:bg-blue-700 transition-colors" onclick="document.getElementById('stats-modal').classList.add('hidden'); document.getElementById('stats-modal').classList.remove('flex');">Супер!</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Weather Modal -->
+    <div id="weather-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-[450] cursor-pointer" onclick="this.classList.add('hidden'); this.classList.remove('flex');">
+        <div class="bg-white p-6 rounded-3xl max-w-md w-full text-center shadow-2xl transform transition-all cursor-default" onclick="event.stopPropagation()">
+            <div class="text-5xl mb-3" id="weather-modal-icon">☁️</div>
+            <h2 class="text-2xl font-black text-slate-800 mb-1" id="weather-modal-title">Прогноз погоди</h2>
+            <p id="weather-location-name" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6">📍 ...</p>
+            <div id="weather-modal-list" class="text-left w-full">
+                <!-- Weather details injected here -->
+            </div>
+            <button id="weather-modal-btn" class="w-full mt-4 bg-blue-600 text-white py-4 rounded-xl font-black uppercase text-sm hover:bg-blue-700 transition-colors" onclick="document.getElementById('weather-modal').classList.add('hidden'); document.getElementById('weather-modal').classList.remove('flex');">ОК</button>
         </div>
     </div>
 
@@ -406,6 +428,8 @@
         let currentTaskFilter = 'default'; 
         let listenersSetup = false;
         let isTwoColumns = localStorage.getItem('quest_columns') !== 'false';
+        
+        let weatherData = null;
 
         const setElText = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
         const setElHTML = (id, val) => { const el = document.getElementById(id); if (el) el.innerHTML = val; };
@@ -427,7 +451,8 @@
                 toast_bought: "🎁 Куплено: ", task_done_toast: "✅ Виконано!",
                 required: "Обов'язкове", shop_locked: "🔒 Обов'язкових завдань залишилось:", view_tasks_btn: "Подивитись", req_badge: "📌 Обов'язково", no_desc: "Опис відсутній",
                 filter_default: "Дефолт", filter_required: "❗️ Обов'язкові", filter_incomplete: "🔄 Невиконані",
-                stats_title: "Твій прогрес", stats_btn_super: "Супер!", req_tasks_title: "Залишилось виконати"
+                stats_title: "Твій прогрес", stats_btn_super: "Супер!", req_tasks_title: "Залишилось виконати",
+                weather_title: "Прогноз погоди", btn_ok: "ОК"
             },
             en: { 
                 greeting: "Go Mark! 🚀", tasks: "Quests", shop: "Shop", goals: "Dreams", calendar: "History", 
@@ -444,7 +469,8 @@
                 toast_bought: "🎁 Bought: ", task_done_toast: "✅ Quest completed!",
                 required: "Required", shop_locked: "🔒 Required tasks left:", view_tasks_btn: "View Tasks", req_badge: "📌 Required", no_desc: "No description provided",
                 filter_default: "Default", filter_required: "❗️ Required", filter_incomplete: "🔄 Incomplete",
-                stats_title: "Your Progress", stats_btn_super: "Awesome!", req_tasks_title: "Tasks to complete"
+                stats_title: "Your Progress", stats_btn_super: "Awesome!", req_tasks_title: "Tasks to complete",
+                weather_title: "Weather Forecast", btn_ok: "OK"
             }
         };
 
@@ -467,6 +493,146 @@
             const currentLang = state.lang || 'uk';
             return obj.desc[currentLang] || obj.desc.uk || '';
         }
+
+        // --- Weather Logic ---
+        function getWeatherEmoji(code) {
+            if (code === 0) return '☀️'; // Clear sky
+            if (code === 1) return '🌤️'; // Mainly clear
+            if (code === 2) return '⛅'; // Partly cloudy
+            if (code === 3) return '☁️'; // Overcast
+            if (code >= 45 && code <= 48) return '🌫️'; // Fog
+            if (code >= 51 && code <= 55) return '🌦️'; // Drizzle
+            if (code >= 61 && code <= 65) return '🌧️'; // Rain
+            if (code >= 71 && code <= 77) return '❄️'; // Snow
+            if (code >= 80 && code <= 82) return '🌧️'; // Showers
+            if (code >= 95) return '⛈️'; // Thunderstorm
+            return '☀️'; // Default fallback
+        }
+
+        async function fetchWeather() {
+            // Fallback location: Kenmore, WA
+            let lat = 47.7573;
+            let lon = -122.2440;
+            let isDefault = true;
+            
+            try {
+                const pos = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 3000 });
+                });
+                lat = pos.coords.latitude;
+                lon = pos.coords.longitude;
+                isDefault = false;
+            } catch (e) {
+                console.log("Using default location for weather.");
+            }
+
+            // Отримуємо назву міста за координатами
+            try {
+                const geoRes = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=${state.lang === 'uk' ? 'uk' : 'en'}`);
+                const geoData = await geoRes.json();
+                let city = geoData.city || geoData.locality || geoData.principalSubdivision || '';
+                setElText('weather-location-name', `📍 ${city}`);
+            } catch (e) {
+                setElText('weather-location-name', isDefault ? '📍 Kenmore, WA' : '📍 Невідома локація');
+            }
+
+            try {
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&hourly=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto`;
+                const res = await fetch(url);
+                weatherData = await res.json();
+                renderWeather();
+            } catch(e) { 
+                console.error("Failed to fetch weather", e); 
+            }
+        }
+
+        function renderWeather() {
+            if(!weatherData) return;
+            const currentC = Math.round(weatherData.current.temperature_2m);
+            const currentF = Math.round(currentC * 9/5 + 32);
+            const currentEmoji = getWeatherEmoji(weatherData.current.weather_code);
+
+            setElHTML('ui-weather-icon', currentEmoji);
+            setElHTML('ui-weather-temp', `${currentC}°C / ${currentF}°F`);
+
+            const list = document.getElementById('weather-modal-list');
+            if(list) {
+                // Determine current hour index
+                const localNow = new Date();
+                let currentIndex = weatherData.hourly.time.findIndex(t => new Date(t) >= localNow);
+                if (currentIndex === -1) currentIndex = 0;
+                if (currentIndex > 0 && new Date(weatherData.hourly.time[currentIndex]) > localNow) {
+                    currentIndex--;
+                }
+
+                // Render Hourly (Next 12 hours)
+                let hourlyHtml = '<div class="flex overflow-x-auto gap-3 pb-4 no-scrollbar mb-4 border-b-2 border-slate-50">';
+                for(let i = currentIndex; i < currentIndex + 12; i++) {
+                    if(!weatherData.hourly.time[i]) break;
+                    const timeObj = new Date(weatherData.hourly.time[i]);
+                    const timeStr = timeObj.toLocaleTimeString(state.lang === 'uk' ? 'uk-UA' : 'en-US', {hour: '2-digit', minute:'2-digit'});
+                    const hTempC = Math.round(weatherData.hourly.temperature_2m[i]);
+                    const hTempF = Math.round(hTempC * 9/5 + 32);
+                    const hEmoji = getWeatherEmoji(weatherData.hourly.weather_code[i]);
+
+                    hourlyHtml += `
+                        <div class="flex flex-col items-center justify-center min-w-[70px] bg-slate-50 border-2 border-slate-100 rounded-[1rem] p-3 shrink-0 transition-transform active:scale-95">
+                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">${timeStr}</span>
+                            <span class="text-3xl my-1">${hEmoji}</span>
+                            <span class="text-sm font-black text-slate-700">${hTempC}°</span>
+                            <span class="text-[9px] font-bold text-slate-400">${hTempF}°F</span>
+                        </div>
+                    `;
+                }
+                hourlyHtml += '</div>';
+
+                // Render Daily
+                let dailyHtml = '<div class="space-y-2 max-h-[35vh] overflow-y-auto pr-1">';
+                for(let i=0; i<weatherData.daily.time.length; i++) {
+                    const date = new Date(weatherData.daily.time[i] + 'T00:00:00');
+                    let dayName = date.toLocaleDateString(state.lang === 'uk' ? 'uk-UA' : 'en-US', { weekday: 'long', day: 'numeric' });
+                    if (i === 0) dayName = state.lang === 'uk' ? 'Сьогодні' : 'Today';
+                    if (i === 1) dayName = state.lang === 'uk' ? 'Завтра' : 'Tomorrow';
+
+                    const code = weatherData.daily.weather_code[i];
+                    const minC = Math.round(weatherData.daily.temperature_2m_min[i]);
+                    const maxC = Math.round(weatherData.daily.temperature_2m_max[i]);
+                    const minF = Math.round(minC * 9/5 + 32);
+                    const maxF = Math.round(maxC * 9/5 + 32);
+
+                    dailyHtml += `
+                        <div class="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+                            <span class="font-bold text-slate-700 capitalize text-sm w-32 text-left">${dayName}</span>
+                            <span class="text-3xl">${getWeatherEmoji(code)}</span>
+                            <div class="text-right flex gap-4">
+                                <div class="flex flex-col items-end">
+                                    <span class="text-xs font-black text-slate-800">${maxC}°</span>
+                                    <span class="text-[9px] font-bold text-slate-400">${maxF}°F</span>
+                                </div>
+                                <div class="flex flex-col items-end opacity-50">
+                                    <span class="text-xs font-black text-slate-800">${minC}°</span>
+                                    <span class="text-[9px] font-bold text-slate-400">${minF}°F</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                dailyHtml += '</div>';
+
+                list.innerHTML = hourlyHtml + dailyHtml;
+            }
+        }
+
+        window.showWeatherModal = function() {
+            if(!weatherData) return;
+            const modal = document.getElementById('weather-modal');
+            if(modal) {
+                setElText('weather-modal-icon', getWeatherEmoji(weatherData.current.weather_code));
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        }
+        // -------------------------
 
         window.toggleColumns = function() {
             isTwoColumns = !isTwoColumns;
@@ -525,12 +691,10 @@
                             <h3 class='font-black text-xl md:text-2xl ${state.completedTasks.includes(task.id)?'line-through text-slate-300':''}'>
                                 ${getTitle(task)}
                             </h3>
-                            ${task.isRequired && !state.completedTasks.includes(task.id) ? `
-                            <div class='mt-1.5'>
-                                <span class="inline-flex items-center gap-1 bg-blue-50 text-blue-600 px-2 py-1 rounded-md text-[9px] md:text-[10px] font-black uppercase tracking-widest border border-blue-100">
-                                    ${t.req_badge}
-                                </span>
-                            </div>` : ''}
+                            <div class='flex items-center mt-1 gap-2'>
+                                <p class='text-xs md:text-sm text-blue-500 font-black uppercase tracking-widest'>+${task.points} ⭐ ${t.reward}</p>
+                                ${task.isRequired ? `<span class="bg-blue-50 text-blue-600 px-2 py-0.5 rounded-md text-[10px] md:text-xs font-black uppercase tracking-widest border border-blue-100">${t.req_badge}</span>` : ''}
+                            </div>
                         </div>
                     </div>
                     <button onclick='event.stopPropagation(); window.completeTask(${task.id},${task.points})' ${state.completedTasks.includes(task.id)?'disabled':''} 
@@ -873,10 +1037,12 @@
             setElText('btn-today-main', t.today);
             setElText('btn-today-audit', t.today);
             
-            // Stats & Req Modal Localization
+            // Stats, Req & Weather Modal Localization
             setElText('stats-modal-title', t.stats_title);
             setElText('stats-modal-btn', t.stats_btn_super);
             setElText('req-tasks-modal-title', t.req_tasks_title);
+            setElText('weather-modal-title', t.weather_title);
+            setElText('weather-modal-btn', t.btn_ok);
             
             const filterMap = { 'default': t.filter_default, 'required': t.filter_required, 'incomplete': t.filter_incomplete };
             setElText('ui-filter-text', filterMap[currentTaskFilter]);
@@ -906,7 +1072,8 @@
             renderAdminLists();
             renderAuditCalendar();
             renderAuditHistory();
-            updateColumnLayout(); // Sync columns layout after UI updates
+            updateColumnLayout();
+            renderWeather(); // Re-render weather to update day names lang
             if(selectedDateStr) window.showDayDetails(selectedDateStr);
         }
 
@@ -1365,6 +1532,7 @@
         };
 
         setInterval(checkDailyReset, 60000);
+        setInterval(fetchWeather, 30 * 60 * 1000);
 
         // --- DATABASE LISTENERS ---
 
@@ -1440,6 +1608,14 @@
             }, (error) => console.error(error));
         };
 
+        const initAuth = async () => {
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                await signInWithCustomToken(auth, __initial_auth_token).catch(e => console.error(e));
+            } else {
+                await signInAnonymously(auth).catch(e => console.error(e));
+            }
+        };
+
         async function start() {
             selectedDateStr = toYMD(new Date());
             auditDateStr = selectedDateStr;
@@ -1454,12 +1630,10 @@
                 }
             });
 
+            fetchWeather();
+
             try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
+                await initAuth();
             } catch (error) {
                 console.error("Auth initialization error:", error);
             }
