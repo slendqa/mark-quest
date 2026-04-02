@@ -528,9 +528,12 @@
 
             // Отримуємо назву міста за координатами
             try {
-                const geoRes = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=${state.lang === 'uk' ? 'uk' : 'en'}`);
+                const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=${state.lang === 'uk' ? 'uk' : 'en'}`);
                 const geoData = await geoRes.json();
-                let city = geoData.city || geoData.locality || geoData.principalSubdivision || '';
+                let city = '';
+                if (geoData && geoData.address) {
+                    city = geoData.address.city || geoData.address.town || geoData.address.village || geoData.address.suburb || geoData.address.county || '';
+                }
                 setElText('weather-location-name', `📍 ${city}`);
             } catch (e) {
                 setElText('weather-location-name', isDefault ? '📍 Kenmore, WA' : '📍 Невідома локація');
@@ -691,10 +694,12 @@
                             <h3 class='font-black text-xl md:text-2xl ${state.completedTasks.includes(task.id)?'line-through text-slate-300':''}'>
                                 ${getTitle(task)}
                             </h3>
-                            <div class='flex items-center mt-1 gap-2'>
-                                <p class='text-xs md:text-sm text-blue-500 font-black uppercase tracking-widest'>+${task.points} ⭐ ${t.reward}</p>
-                                ${task.isRequired ? `<span class="bg-blue-50 text-blue-600 px-2 py-0.5 rounded-md text-[10px] md:text-xs font-black uppercase tracking-widest border border-blue-100">${t.req_badge}</span>` : ''}
-                            </div>
+                            ${task.isRequired && !state.completedTasks.includes(task.id) ? `
+                            <div class='mt-1.5'>
+                                <span class="inline-flex items-center gap-1 bg-blue-50 text-blue-600 px-2 py-1 rounded-md text-[9px] md:text-[10px] font-black uppercase tracking-widest border border-blue-100">
+                                    ${t.req_badge}
+                                </span>
+                            </div>` : ''}
                         </div>
                     </div>
                     <button onclick='event.stopPropagation(); window.completeTask(${task.id},${task.points})' ${state.completedTasks.includes(task.id)?'disabled':''} 
