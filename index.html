@@ -430,6 +430,9 @@
         let isTwoColumns = localStorage.getItem('quest_columns') !== 'false';
         
         let weatherData = null;
+        
+        // Confirmation state for two-tap validation
+        window.actionConfirm = { type: null, id: null, timer: null };
 
         const setElText = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; };
         const setElHTML = (id, val) => { const el = document.getElementById(id); if (el) el.innerHTML = val; };
@@ -452,7 +455,8 @@
                 required: "Обов'язкове", shop_locked: "🔒 Обов'язкових завдань залишилось:", view_tasks_btn: "Подивитись", req_badge: "📌 Обов'язково", no_desc: "Опис відсутній",
                 filter_default: "Дефолт", filter_required: "❗️ Обов'язкові", filter_incomplete: "🔄 Невиконані",
                 stats_title: "Твій прогрес", stats_btn_super: "Супер!", req_tasks_title: "Залишилось виконати",
-                weather_title: "Прогноз погоди", btn_ok: "ОК"
+                weather_title: "Прогноз погоди", btn_ok: "ОК",
+                confirm: "Точно?", buy_goal: "Досягнути!", shop_locked_short: "🔒 Спочатку квести"
             },
             en: { 
                 greeting: "Go Mark! 🚀", tasks: "Quests", shop: "Shop", goals: "Dreams", calendar: "History", 
@@ -470,7 +474,8 @@
                 required: "Required", shop_locked: "🔒 Required tasks left:", view_tasks_btn: "View Tasks", req_badge: "📌 Required", no_desc: "No description provided",
                 filter_default: "Default", filter_required: "❗️ Required", filter_incomplete: "🔄 Incomplete",
                 stats_title: "Your Progress", stats_btn_super: "Awesome!", req_tasks_title: "Tasks to complete",
-                weather_title: "Weather Forecast", btn_ok: "OK"
+                weather_title: "Weather Forecast", btn_ok: "OK",
+                confirm: "Sure?", buy_goal: "Achieve!", shop_locked_short: "🔒 Quests first"
             }
         };
 
@@ -658,6 +663,37 @@
                 else { i1.classList.remove('hidden'); i2.classList.add('hidden'); }
             }
         }
+        
+        // --- ACTION CONFIRMATION LOGIC ---
+        window.initiateAction = function(e, type, id, value) {
+            if (e) e.stopPropagation();
+
+            if (window.actionConfirm.type === type && window.actionConfirm.id === id) {
+                // Confirm action
+                clearTimeout(window.actionConfirm.timer);
+                window.actionConfirm = { type: null, id: null, timer: null };
+
+                if (type === 'task') {
+                    window.completeTask(id, value);
+                } else if (type === 'shop') {
+                    window.buyReward(id, value);
+                } else if (type === 'goal') {
+                    window.buyGoal(id, value);
+                }
+            } else {
+                // Request confirmation
+                clearTimeout(window.actionConfirm.timer);
+                window.actionConfirm.type = type;
+                window.actionConfirm.id = id;
+
+                window.actionConfirm.timer = setTimeout(() => {
+                    window.actionConfirm = { type: null, id: null, timer: null };
+                    updateUI();
+                }, 3000);
+
+                updateUI();
+            }
+        };
 
         function renderTasks() { 
             const l = document.getElementById('tasks-list'); if(!l) return;
@@ -686,7 +722,10 @@
                 return 0;
             });
 
-            l.innerHTML = displayTasks.map(task => `
+            l.innerHTML = displayTasks.map(task => {
+                const isConfirming = window.actionConfirm.type === 'task' && window.actionConfirm.id === task.id;
+                
+                return `
                 <div class='quest-card bg-white p-6 rounded-[1.5rem] flex items-center justify-between shadow-sm border-slate-100 hover:border-blue-100 transition-colors cursor-pointer ${task.isRequired && !state.completedTasks.includes(task.id) ? 'border-l-4 border-l-blue-500' : ''}' onclick='window.showTaskDesc(${task.id})'>
                     <div class='flex items-center gap-5 text-slate-800 pointer-events-none'>
                         <div class='w-16 h-16 bg-blue-50 rounded-xl flex items-center justify-center text-4xl shadow-inner'>${task.icon || '🎯'}</div>
@@ -702,11 +741,12 @@
                             </div>` : ''}
                         </div>
                     </div>
-                    <button onclick='event.stopPropagation(); window.completeTask(${task.id},${task.points})' ${state.completedTasks.includes(task.id)?'disabled':''} 
-                        class="px-8 py-4 rounded-xl font-black text-base transition-all ${state.completedTasks.includes(task.id) ? 'bg-slate-50 text-slate-300 cursor-not-allowed' : 'bg-blue-100 text-blue-700 active:bg-blue-600 active:text-white shadow-sm hover:shadow-md relative z-10 min-w-[100px]'}">
-                        ${state.completedTasks.includes(task.id) ? t.done : `+${task.points} ⭐`}
+                    <button onclick='window.initiateAction(event, "task", ${task.id}, ${task.points})' ${state.completedTasks.includes(task.id)?'disabled':''} 
+                        class="px-8 py-4 rounded-xl font-black text-base transition-all ${state.completedTasks.includes(task.id) ? 'bg-slate-50 text-slate-300 cursor-not-allowed' : (isConfirming ? 'bg-yellow-400 text-yellow-900 scale-95 border border-yellow-500' : 'bg-blue-100 text-blue-700 active:bg-blue-600 active:text-white shadow-sm hover:shadow-md')} relative z-10 min-w-[100px]">
+                        ${isConfirming ? t.confirm : (state.completedTasks.includes(task.id) ? t.done : `+${task.points} ⭐`)}
                     </button>
-                </div>`).join(''); 
+                </div>`
+            }).join(''); 
         }
 
         function renderShop() {
@@ -733,17 +773,21 @@
                         </div>`;
             }
 
-            html += (config.shop || []).map(i => `
+            html += (config.shop || []).map(i => {
+                const isConfirming = window.actionConfirm.type === 'shop' && window.actionConfirm.id === i.id;
+                
+                return `
                 <div class='quest-card bg-white p-8 rounded-2xl flex flex-col gap-5 shadow-sm border-slate-100 hover:border-orange-100 transition-colors text-slate-800 ${shopLocked ? 'opacity-50 grayscale' : ''}'>
                     <div class='flex items-center gap-4'>
                         <div class='w-16 h-16 bg-orange-100 rounded-xl flex items-center justify-center text-4xl'>${i.icon || '🎁'}</div>
                         <h3 class='font-black text-xl'>${getTitle(i)}</h3>
                     </div>
-                    <button onclick='window.buyReward(${i.id},${i.cost})' ${state.balance < i.cost || shopLocked ? 'disabled' : ''} 
-                        class='w-full py-5 rounded-xl font-black text-lg transition-all ${state.balance >= i.cost && !shopLocked ? 'bg-yellow-400 text-yellow-900 border-b-4 border-yellow-600 active:scale-95 hover:bg-yellow-300' : 'bg-slate-50 text-slate-400 cursor-not-allowed'}'>
-                        ${i.cost} ⭐ ${t.buy}
+                    <button onclick='window.initiateAction(event, "shop", ${i.id}, ${i.cost})' ${state.balance < i.cost || shopLocked ? 'disabled' : ''} 
+                        class='w-full py-5 rounded-xl font-black text-lg transition-all ${state.balance >= i.cost && !shopLocked ? (isConfirming ? 'bg-red-100 text-red-600 border border-red-300 scale-95' : 'bg-yellow-400 text-yellow-900 border-b-4 border-yellow-600 active:scale-95 hover:bg-yellow-300') : 'bg-slate-50 text-slate-400 cursor-not-allowed'}'>
+                        ${isConfirming ? t.confirm : `${i.cost} ⭐ ${t.buy}`}
                     </button>
-                </div>`).join('');
+                </div>`
+            }).join('');
                 
             container.innerHTML = html;
         }
@@ -752,16 +796,37 @@
             const l = document.getElementById('goals-list'); if(!l) return;
             const currentLang = state.lang || 'uk';
             const t = translations[currentLang] || translations['uk'];
+            
+            const todayDay = new Date().getDay();
+            const requiredTasks = (config.tasks || []).filter(task => {
+                const activeDays = task.activeDays || [0,1,2,3,4,5,6];
+                const isHidden = task.isHidden || false;
+                return task.isRequired && !isHidden && activeDays.includes(todayDay);
+            });
+            const uncompletedReq = requiredTasks.filter(task => !state.completedTasks.includes(task.id));
+            const shopLocked = uncompletedReq.length > 0;
+
             l.innerHTML = config.goals.map(g => {
                 const p = Math.min(100, Math.floor((state.balance/g.cost)*100));
+                const canAfford = state.balance >= g.cost;
+                const isLocked = shopLocked || !canAfford;
+                const isConfirming = window.actionConfirm.type === 'goal' && window.actionConfirm.id === g.id;
+
                 return `
-                <div class='bg-white p-6 rounded-2xl shadow-sm border-slate-100 space-y-4 text-slate-800 hover:border-blue-100 transition-colors'>
-                    <div class='flex justify-between items-center text-slate-800'>
-                        <div class='flex items-center gap-4'><span class='text-5xl'>${g.icon || '💎'}</span><span class='font-black text-2xl'>${getTitle(g)}</span></div>
-                        <span class='text-blue-600 font-black text-xl'>${p}%</span>
+                <div class='bg-white p-6 rounded-2xl shadow-sm border-slate-100 flex flex-col justify-between hover:border-blue-100 transition-colors ${shopLocked ? 'opacity-50 grayscale' : ''}'>
+                    <div class='space-y-4 text-slate-800'>
+                        <div class='flex justify-between items-center text-slate-800'>
+                            <div class='flex items-center gap-4'><span class='text-5xl'>${g.icon || '💎'}</span><span class='font-black text-2xl'>${getTitle(g)}</span></div>
+                            <span class='text-blue-600 font-black text-xl'>${p}%</span>
+                        </div>
+                        <div class='w-full bg-slate-100 h-6 rounded-full overflow-hidden border-2 border-slate-50'><div class='bg-blue-500 h-full transition-all duration-1000' style='width: ${p}%'></div></div>
+                        <div class='flex justify-between text-xs font-black text-slate-400 uppercase tracking-widest'><span>${t.day_balance.replace(':','')} ${state.balance} ⭐</span><span>${t.target} ${g.cost} ⭐</span></div>
                     </div>
-                    <div class='w-full bg-slate-100 h-6 rounded-full overflow-hidden border-2 border-slate-50'><div class='bg-blue-500 h-full transition-all duration-1000' style='width: ${p}%'></div></div>
-                    <div class='flex justify-between text-xs font-black text-slate-400 uppercase tracking-widest'><span>${t.day_balance.replace(':','')} ${state.balance} ⭐</span><span>${t.target} ${g.cost} ⭐</span></div>
+                    
+                    <button onclick='window.initiateAction(event, "goal", ${g.id}, ${g.cost})' ${isLocked ? 'disabled' : ''}
+                        class='w-full mt-6 py-4 rounded-xl font-black text-sm transition-all ${isLocked ? 'bg-slate-50 text-slate-400 cursor-not-allowed' : (isConfirming ? 'bg-red-100 text-red-600 border border-red-300 scale-95' : 'bg-blue-600 text-white hover:bg-blue-700 active:scale-95 shadow-md')}'>
+                        ${isConfirming ? t.confirm : (isLocked ? (shopLocked ? t.shop_locked_short : `${g.cost} ⭐`) : t.buy_goal)}
+                    </button>
                 </div>`;
             }).join('');
         }
@@ -1170,6 +1235,16 @@
                 timestamp: Date.now(), type: 'task', title: getTitle(task), value: pts, icon: task.icon || '🎯', reverted: false, taskId: id 
             }).catch(e => console.error(e));
             showToast(`${t.task_done_toast} +${pts} ⭐`);
+        };
+
+        window.buyGoal = async function(id, cost) {
+            if (!user || state.balance < cost) return;
+            const currentLang = state.lang || 'uk';
+            const t = translations[currentLang] || translations['uk'];
+            const goal = config.goals.find(r => r.id === id);
+            await updateDoc(doc(db, 'artifacts', appId, 'public', 'data', 'userState', 'main'), { balance: state.balance - cost }).catch(e => console.error(e));
+            await addDoc(collection(db, 'artifacts', appId, 'public', 'data', 'history'), { timestamp: Date.now(), type: 'goal', title: getTitle(goal), value: cost, icon: goal.icon || '💎', reverted: false }).catch(e => console.error(e));
+            showToast(`${t.toast_bought} ${getTitle(goal)}`);
         };
 
         window.revertAction = async function(logId, type, value, taskId) {
